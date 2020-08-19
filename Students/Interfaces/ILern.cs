@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Students
+namespace Students.Interfaces
 {
-    public class Exam
+    public interface ILern
     {
         public string Name { get; set; }
 
         public DateTime Date { get; set; }
-
-        public int Assessment { get; set; }
     }
 }

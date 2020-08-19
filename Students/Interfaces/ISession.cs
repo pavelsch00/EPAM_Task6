@@ -3,17 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Students
+namespace Students.Interfaces
 {
-    public class Session
+    public interface ISession
     {
-        public Session(int number, List<Сredit> credit, List<Exam> exam)
-        {
-            Number = number;
-            Credit = credit;
-            Exam = exam;
-        }
-
         public int Number { get; set; }
 
         public List<Сredit> Credit { get; set; }
