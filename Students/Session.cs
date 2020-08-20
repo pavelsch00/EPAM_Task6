@@ -7,7 +7,7 @@ namespace Students
 {
     public class Session
     {
-        public Session(int number, List<Сredit> credit, List<Exam> exam)
+        public Session(int number, List<Credit> credit, List<Exam> exam)
         {
             Number = number;
             Credit = credit;
@@ -16,8 +16,24 @@ namespace Students
 
         public int Number { get; set; }
 
-        public List<Сredit> Credit { get; set; }
+        public List<Credit> Credit { get; set; }
 
         public List<Exam> Exam { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in Credit)
+            {
+                sb.Append(item);
+            }
+
+            foreach (var item in Exam)
+            {
+                sb.Append(item);
+            }
+
+            return $"\nSession Number: {Number}" + sb;
+        }
     }
 }

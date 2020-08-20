@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ORM;
+using Students;
+using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -9,7 +12,7 @@ namespace Test
         static void Main(string[] args)
         {
             string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StudentsDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
+            /*
             string sqlExpression = "SELECT * FROM Students";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -33,6 +36,16 @@ namespace Test
                 }
 
                 reader.Close();
+            }*/
+
+            Orm orm = new Orm(connectionString);
+
+            List<Student> students = new List<Student>();
+            students = orm.GetStudentFromBd();
+
+            foreach (var item in students)
+            {
+                Console.WriteLine(item);
             }
         }
     }

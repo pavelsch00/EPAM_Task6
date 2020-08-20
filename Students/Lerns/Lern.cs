@@ -16,5 +16,7 @@ namespace Students.Lerns
         public string Name { get; set; }
 
         public DateTime Date { get; set; }
+
+        public override string ToString() => $"\n Date: {Date}\t Name: {Name}\t ";
     }
 }

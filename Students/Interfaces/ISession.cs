@@ -9,7 +9,7 @@ namespace Students.Interfaces
     {
         public int Number { get; set; }
 
-        public List<Сredit> Credit { get; set; }
+        public List<Credit> Credit { get; set; }
 
         public List<Exam> Exam { get; set; }
     }

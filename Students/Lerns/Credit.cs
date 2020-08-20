@@ -4,13 +4,15 @@ using System.Text;
 
 namespace Students.Lerns
 {
-    public class Сredit : Lern
+    public class Credit : Lern
     {
-        public Сredit(string name, DateTime date, bool assessment) : base(name, date)
+        public Credit(string name, DateTime date, bool assessment) : base(name, date)
         {
             Assessment = assessment;
         }
 
         public bool Assessment { get; set; }
+
+        public override string ToString() => base.ToString() + $"Assessment: {Assessment}\n";
     }
 }

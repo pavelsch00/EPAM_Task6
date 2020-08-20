@@ -9,7 +9,7 @@ namespace Students
         {
             FullName = fullName;
             Gender = gender;
-            DateofBirth = dateofBirth;
+            DateOfBirth = DateTime.Parse(dateofBirth);
             Group = group;
         }
 
@@ -17,15 +17,17 @@ namespace Students
         {
             FullName = fullName;
             Gender = gender;
-            DateofBirth = dateofBirth;
+            DateOfBirth = DateTime.Parse(dateofBirth);
         }
 
         public string FullName { get; set; }
 
         public string Gender { get; set; }
 
-        public string DateofBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         public Group Group { get; set; }
+
+        public override string ToString() => $"FullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth}{Group?.ToString()}";
     }
 }

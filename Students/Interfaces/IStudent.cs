@@ -10,7 +10,7 @@ namespace Students.Interfaces
 
         public string Gender { get; set; }
 
-        public string DateofBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         public Group Group { get; set; }
     }
