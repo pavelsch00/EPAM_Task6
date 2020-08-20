@@ -18,7 +18,6 @@ namespace ORM
 
         public void AddToBd(Student student)
         {
-
         }
 
         public List<Student> GetStudentFromBd()
