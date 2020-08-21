@@ -1,4 +1,4 @@
-﻿using Students.Lerns;
+﻿using Students.EducationalSubjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,28 +7,26 @@ namespace Students
 {
     public class Session
     {
-        public Session(int number, List<Credit> credit, List<Exam> exam)
+        public Session(int number, List<EducationalSubject> educationalSubjects)
         {
             Number = number;
-            Credit = credit;
-            Exam = exam;
+            EducationalSubjects = educationalSubjects;
+        }
+
+        public Session(int number)
+        {
+            Number = number;
         }
 
         public int Number { get; set; }
 
-        public List<Credit> Credit { get; set; }
-
-        public List<Exam> Exam { get; set; }
+        public List<EducationalSubject> EducationalSubjects { get; set; }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var item in Credit)
-            {
-                sb.Append(item);
-            }
 
-            foreach (var item in Exam)
+            foreach (var item in EducationalSubjects)
             {
                 sb.Append(item);
             }

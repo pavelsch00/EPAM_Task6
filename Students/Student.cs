@@ -28,6 +28,6 @@ namespace Students
 
         public Group Group { get; set; }
 
-        public override string ToString() => $"FullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth}{Group?.ToString()}";
+        public override string ToString() => $"FullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth.ToShortDateString()}{Group?.ToString()}";
     }
 }

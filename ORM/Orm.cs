@@ -1,5 +1,5 @@
 ﻿using Students;
-using Students.Lerns;
+using Students.EducationalSubjects;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -14,6 +14,10 @@ namespace ORM
             ConnectionString = connectionString;
         }
 
+        private int StudentId { get; set; }
+
+        private int SessionId { get; set; }
+
         public string ConnectionString { get; set; }
 
         public void AddToBd(Student student)
@@ -22,24 +26,25 @@ namespace ORM
 
         public List<Student> GetStudentFromBd()
         {
-            string sqlExpression = "SELECT * FROM Students";
+            string sqlExpression = "SELECT * FROM Students s JOIN Genders g ON s.GenderId = g.GenderId" +
+                " JOIN Groups gr ON s.GroupId = gr.GroupId";
             var studetns = new List<Student>();
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                var command = new SqlCommand(sqlExpression, connection);
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows) // если есть данные
+                if (reader.HasRows)
                 {
-                    while (reader.Read()) // построчно считываем данные
+                    while (reader.Read())
                     {
-                        string fullName = (string)reader.GetValue(1);
-                        string gender = (string)reader.GetValue(2);
-                        DateTime dateOfBirth = DateTime.Parse(reader.GetValue(3).ToString());
-                        int groupId = (int)reader.GetValue(4);
-
-                        studetns.Add(new Student(fullName, gender, dateOfBirth.ToShortDateString(), GetGroupFromBd(groupId)));
+                        StudentId = (int)reader["StudentId"];
+                        string fullName = (string)reader["FullName"];
+                        string gender = (string)reader["GenderName"];
+                        DateTime dateOfBirth = DateTime.Parse(reader["DateOfBirth"].ToString());
+                        string group = (string)reader["GroupName"];
+                        studetns.Add(new Student(fullName, gender, dateOfBirth.ToString(), new Group(group, GetSessionsFromBd((int)reader["GroupId"]))));
                     }
                 }
 
@@ -49,112 +54,84 @@ namespace ORM
             return studetns;
         }
 
-        public  Group GetGroupFromBd(int groupId)
+        public List<Session> GetSessionsFromBd(int groupId)
         {
-            string sqlExpression = "SELECT * FROM Groups";
-            var session = new List<Session>();
+            string sqlExpression = $"SELECT * FROM GroupSessions gs" +
+                $" JOIN Sessions s ON gs.GroupId = {groupId} AND s.SessionId = gs.SessionId";
+            var sessions = new List<Session>();
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                var command = new SqlCommand(sqlExpression, connection);
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows) // если есть данные
+                if (reader.HasRows)
                 {
-                    while (reader.Read()) // построчно считываем данные
+                    while (reader.Read())
                     {
-                        if((int)reader.GetValue(0) == groupId)
-                        {
-                            return new Group((string)reader.GetValue(1), GetSessionsFromBd((int)reader.GetValue(2)));
-                        }
+                        SessionId = (int)reader["SessionId"];
+                        sessions.Add(new Session((int)reader["SessionNumber"], GetEducationalSubjectsFromBd(SessionId)));
                     }
                 }
 
                 reader.Close();
             }
 
-            return null;
+            return sessions;
         }
 
-        public List<Session> GetSessionsFromBd(int sessionId)
+        public List<EducationalSubject> GetEducationalSubjectsFromBd(int sessionId)
         {
-            string sqlExpression = "SELECT * FROM Sessions";
-            var session = new List<Session>();
+            string sqlExpression = $"SELECT * FROM EducationalSubjectsList esl" +
+                $" JOIN EducationalSubjects es ON esl.SessionsId = {sessionId} AND esl.EducationalSubjectsId = es.SubjectId" +
+                $" JOIN EducationalSubjectNames esn ON esn.SubjectNameId = es.SubjectNameId" +
+                $" JOIN EducationalSubjectTypes est ON est.SubjectTypeId = es.SubjectTypeId" +
+                $" JOIN EducationalSubjectsDate esd ON esd.EducationalSubjectsDateId = es.DateId";
+            var educationalSubjects = new List<EducationalSubject>();
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                var command = new SqlCommand(sqlExpression, connection);
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows) // если есть данные
+                if (reader.HasRows)
                 {
-                    while (reader.Read()) // построчно считываем данные
+                    while (reader.Read())
                     {
-                        if ((int)reader.GetValue(0) == sessionId)
-                        {
-                            session.Add(new Session(sessionId, GetCreditFromBd(sessionId), GetExamsFromBd(sessionId)));
-                        }
+                        educationalSubjects.Add(new EducationalSubject((string)reader["SubjectName"], DateTime.Parse(reader["Date"].ToString()), (string)reader["Type"], GetEducationalSubjectsResultFromBd((int)reader["EducationalSubjectsId"])));
                     }
                 }
 
                 reader.Close();
             }
 
-            return session;
+            return educationalSubjects;
         }
 
-        public List<Exam> GetExamsFromBd(int sessionId)
+        public int GetEducationalSubjectsResultFromBd(int educationalSubjectId)
         {
-            string sqlExpression = "SELECT * FROM Exams";
-            var exam = new List<Exam>();
+            string sqlExpression = $"SELECT * FROM Students" +
+                $" JOIN StudentsResults sr ON sr.StudentId = {StudentId}" +
+                $" JOIN EducationalSubjectResultList esrl ON esrl.EducationalSubjectResultListId = sr.EducationalSubjectResultListId AND esrl.SessionId = {SessionId}" +
+                $" JOIN EducationalSubjectResults esr ON esr.EducationalSubjectResultId = esrl.EducationalSubjectResultId AND esr.EducationalSubjectsId = {educationalSubjectId}";
+            int result = 0;
+
             using (SqlConnection connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                var command = new SqlCommand(sqlExpression, connection);
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows) // если есть данные
+                if (reader.HasRows)
                 {
-                    while (reader.Read()) // построчно считываем данные
-                    {
-                        if ((int)reader.GetValue(0) == sessionId)
-                        {
-                            exam.Add(new Exam((string)reader.GetValue(1), (DateTime)reader.GetValue(2), (int)reader.GetValue(3)));
-                        }
-                    }
+                    reader.Read();
+                    result = (int)reader["Value"]; 
                 }
 
                 reader.Close();
             }
 
-            return exam;
-        }
-
-        public List<Credit> GetCreditFromBd(int sessionId)
-        {
-            string sqlExpression = "SELECT * FROM Exams";
-            var credit = new List<Credit>();
-            using (SqlConnection connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows) // если есть данные
-                {
-                    while (reader.Read()) // построчно считываем данные
-                    {
-                        if ((int)reader.GetValue(0) == sessionId)
-                        {
-                            credit.Add(new Credit((string)reader.GetValue(1), (DateTime)reader.GetValue(2), (int)reader.GetValue(3) == 1 ? true : false));
-                        }
-                    }
-                }
-
-                reader.Close();
-            }
-
-            return credit;
+            return result;
         }
     }
 }
