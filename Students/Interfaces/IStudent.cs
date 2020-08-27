@@ -12,6 +12,6 @@ namespace Students.Interfaces
 
         public DateTime DateOfBirth { get; set; }
 
-        public Group Group { get; set; }
+        public int GroupId { get; set; }
     }
 }

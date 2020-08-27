@@ -8,7 +8,5 @@ namespace Students.Interfaces
     {
 
         public string Name { get; set; }
-
-        public List<Session> Session { get; set; }
     }
 }

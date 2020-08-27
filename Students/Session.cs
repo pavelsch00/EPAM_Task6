@@ -1,5 +1,4 @@
-﻿using Students.EducationalSubjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,10 +6,10 @@ namespace Students
 {
     public class Session
     {
-        public Session(int number, List<EducationalSubject> educationalSubjects)
+        public Session(int number, int groupId)
         {
             Number = number;
-            EducationalSubjects = educationalSubjects;
+            GroupId = groupId;
         }
 
         public Session(int number)
@@ -18,20 +17,17 @@ namespace Students
             Number = number;
         }
 
+        public Session()
+        {
+
+        }
+
+        public int Id { get; set; }
+
+        public int GroupId { get; set; }
+
         public int Number { get; set; }
 
-        public List<EducationalSubject> EducationalSubjects { get; set; }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var item in EducationalSubjects)
-            {
-                sb.Append(item);
-            }
-
-            return $"\nSession Number: {Number}" + sb;
-        }
+        public override string ToString() => $"\nSession Number: {Number}";
     }
 }

@@ -1,4 +1,5 @@
-﻿using ORM;
+﻿using CRUD;
+using ORM;
 using Students;
 using System;
 using System.Collections.Generic;
@@ -38,15 +39,36 @@ namespace Test
                 reader.Close();
             }*/
 
-            Orm orm = new Orm(connectionString);
+            Crud<Student> crudStudent = new Crud<Student>(connectionString);
+            Crud<Group> crudGroup = new Crud<Group>(connectionString);
+            /*
+            List<Group> groups = new List<Group>();
+            groups.Add(new Group("IS-11"));
+            groups.Add(new Group("IS-12"));*/
+            /*
+            crudStudent.ConnectToBd();
+            var listStudent = crudStudent.GetFromTable("Students");
+            crudStudent.DisConnectToBd();
+            */
+            crudGroup.ConnectToBd();
+            var listGroup = crudGroup.GetFromTable("Groups");
+            crudGroup.DisConnectToBd();
+            
+            foreach (var item in listGroup)
+            {
+                Console.WriteLine(item);
+            }
+
+            /*
+            GetFromDb orm = new GetFromDb(connectionString);
 
             List<Student> students = new List<Student>();
-            students = orm.GetStudentFromBd();
+            students = orm.GetStudents();
 
             foreach (var item in students)
             {
                 Console.WriteLine(item);
-            }
+            }*/
         }
     }
 }

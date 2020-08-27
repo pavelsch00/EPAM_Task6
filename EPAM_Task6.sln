@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Students", "Students\Students.csproj", "{CC406762-987A-4B17-ADEB-AAF1B8BF2B84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Students", "Students\Students.csproj", "{CC406762-987A-4B17-ADEB-AAF1B8BF2B84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{CE5D6EC4-CA33-4FD9-AE39-15A64EB8BD67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{CE5D6EC4-CA33-4FD9-AE39-15A64EB8BD67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ORM", "ORM\ORM.csproj", "{E35EB92C-FF78-4EA9-AF8D-9E8FDF2CBB7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ORM", "ORM\ORM.csproj", "{E35EB92C-FF78-4EA9-AF8D-9E8FDF2CBB7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRUD", "CRUD\CRUD.csproj", "{4CB5C268-D5C7-4381-AC13-DCAB0435D39A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{E35EB92C-FF78-4EA9-AF8D-9E8FDF2CBB7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E35EB92C-FF78-4EA9-AF8D-9E8FDF2CBB7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E35EB92C-FF78-4EA9-AF8D-9E8FDF2CBB7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB5C268-D5C7-4381-AC13-DCAB0435D39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB5C268-D5C7-4381-AC13-DCAB0435D39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB5C268-D5C7-4381-AC13-DCAB0435D39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB5C268-D5C7-4381-AC13-DCAB0435D39A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
