@@ -12,6 +12,12 @@ namespace Students
             Name = name;
         }
 
+        public Group(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
         public Group()
         {
 

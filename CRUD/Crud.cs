@@ -54,5 +54,21 @@ namespace CRUD
                 Orm.Create(item, table);
             }
         }
+
+        public void Update(List<T> obj, string table)
+        {
+            foreach (var item in obj)
+            {
+                Orm.Update(item, table);
+            }
+        }
+
+        public void Dalete(List<T> obj, string table)
+        {
+            foreach (var item in obj)
+            {
+                Orm.Delete(item, table);
+            }
+        }
     }
 }

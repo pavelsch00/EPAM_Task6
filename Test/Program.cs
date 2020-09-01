@@ -41,23 +41,25 @@ namespace Test
 
             Crud<Student> crudStudent = new Crud<Student>(connectionString);
             Crud<Group> crudGroup = new Crud<Group>(connectionString);
-            /*
+            
             List<Group> groups = new List<Group>();
-            groups.Add(new Group("IS-11"));
-            groups.Add(new Group("IS-12"));*/
+            groups.Add(new Group(11, "IS-11"));
+            groups.Add(new Group(12, "IS-12"));
             /*
             crudStudent.ConnectToBd();
             var listStudent = crudStudent.GetFromTable("Students");
             crudStudent.DisConnectToBd();
             */
             crudGroup.ConnectToBd();
-            var listGroup = crudGroup.GetFromTable("Groups");
+            //var listGroup = crudGroup.GetFromTable("Groups");
+            crudGroup.Dalete(groups, "Groups");
+            crudGroup.Update(groups, "Groups");
             crudGroup.DisConnectToBd();
-            
+            /*
             foreach (var item in listGroup)
             {
                 Console.WriteLine(item);
-            }
+            }*/
 
             /*
             GetFromDb orm = new GetFromDb(connectionString);
