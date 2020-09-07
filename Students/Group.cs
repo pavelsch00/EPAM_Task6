@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Students
 {
-    public class Group : IGroup
+    public class Group : BaseModel, IGroup
     {
         public Group(string name)
         {
@@ -22,8 +22,6 @@ namespace Students
         {
 
         }
-
-        public int Id { get; set; }
 
         public string Name { get; set; }
 

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ORM
+namespace Students
 {
-    public class SetToBd
+    public class BaseModel
     {
-
-
+        public int Id { get; set; }
     }
 }

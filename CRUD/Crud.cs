@@ -7,14 +7,12 @@ namespace CRUD
 {
     public class Crud <T> where T : new()
     {
-        public Crud(string connectionString)
-        {
-            Orm = new Orm<T>(connectionString);
-        }
-
         private Orm<T> Orm { get; set; }
 
-        public void ConnectToBd() => Orm.ConnectToBd();
+        public void ConnectToBd(string connectionString)
+        {
+            Orm = Orm<T>.GetInstance(connectionString);
+        }
 
         public void DisConnectToBd() => Orm.DisConnectToBd();
 
@@ -63,6 +61,7 @@ namespace CRUD
             }
         }
 
+ 
         public void Dalete(List<T> obj, string table)
         {
             foreach (var item in obj)

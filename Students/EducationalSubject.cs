@@ -3,7 +3,7 @@ using System;
 
 namespace Students
 {
-    public class EducationalSubject : ILern
+    public class EducationalSubject : BaseModel, ILern
     {
         public EducationalSubject(string name, DateTime date, string type)
         {
@@ -15,8 +15,6 @@ namespace Students
         public EducationalSubject()
         {
         }
-
-        public int Id { get; set; }
 
         public string Name { get; set; }
 

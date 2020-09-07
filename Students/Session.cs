@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Students
 {
-    public class Session
+    public class Session : BaseModel
     {
         public Session(int number, int groupId)
         {
@@ -21,8 +21,6 @@ namespace Students
         {
 
         }
-
-        public int Id { get; set; }
 
         public int GroupId { get; set; }
 

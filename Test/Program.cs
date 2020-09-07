@@ -39,22 +39,22 @@ namespace Test
                 reader.Close();
             }*/
 
-            Crud<Student> crudStudent = new Crud<Student>(connectionString);
-            Crud<Group> crudGroup = new Crud<Group>(connectionString);
+            Crud<Student> crudStudent = new Crud<Student>();
+            Crud<Group> crudGroup = new Crud<Group>();
             
-            List<Group> groups = new List<Group>();
+            /*List<Group> groups = new List<Group>();
             groups.Add(new Group(11, "IS-11"));
-            groups.Add(new Group(12, "IS-12"));
-            /*
-            crudStudent.ConnectToBd();
+            groups.Add(new Group(12, "IS-12"));*/
+            
+            crudStudent.ConnectToBd(connectionString);
             var listStudent = crudStudent.GetFromTable("Students");
             crudStudent.DisConnectToBd();
-            */
-            crudGroup.ConnectToBd();
-            //var listGroup = crudGroup.GetFromTable("Groups");
-            crudGroup.Dalete(groups, "Groups");
-            crudGroup.Update(groups, "Groups");
-            crudGroup.DisConnectToBd();
+            /*
+            crudGroup.ConnectToBd(connectionString);
+            var listGroup = crudGroup.GetFromTable("Groups");
+            // crudGroup.Dalete(groups, "Groups");
+            // crudGroup.Update(groups, "Groups");
+            crudGroup.DisConnectToBd();*/
             /*
             foreach (var item in listGroup)
             {
@@ -66,11 +66,11 @@ namespace Test
 
             List<Student> students = new List<Student>();
             students = orm.GetStudents();
-
-            foreach (var item in students)
+            */
+            foreach (var item in listStudent)
             {
                 Console.WriteLine(item);
-            }*/
+            }
         }
     }
 }

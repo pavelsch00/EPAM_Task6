@@ -3,7 +3,7 @@ using System;
 
 namespace Students
 {
-    public class Student : IStudent
+    public class Student : BaseModel, IStudent
     {
         public Student(string fullName, string gender, string dateofBirth, int groupId)
         {
@@ -24,8 +24,6 @@ namespace Students
         {
 
         }
-
-        public int Id { get; set; }
 
         public string FullName { get; set; }
 

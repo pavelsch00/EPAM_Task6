@@ -7,11 +7,14 @@ namespace ORM
 {
     public class Orm<T>
     {
+        private static Orm<T> instance;
+
         public Orm(string connectionString)
         {
             ConnectionString = connectionString;
             Connection = new SqlConnection(ConnectionString);
             Properties = new List<PropertyInfo>(typeof(T).GetProperties());
+            Connection.Open();
         }
 
         private List<PropertyInfo> Properties { get; set; }
@@ -25,6 +28,16 @@ namespace ORM
             Connection.Open();
         }
 
+        public static Orm<T> GetInstance(string connectionString)
+        {
+            if (instance == null)
+            {
+                instance = new Orm<T>(connectionString);
+            }
+
+            return instance;
+        }
+
         public void DisConnectToBd()
         {
             Connection.Close();
@@ -33,7 +46,7 @@ namespace ORM
         public SqlDataReader GetTable(string tableName)
         {
             var sqlExpression = $"SELECT * FROM {tableName}";
-            return new SqlCommand(sqlExpression, Connection).ExecuteReader(); ;
+            return new SqlCommand(sqlExpression, Connection).ExecuteReader();
         }
 
         public void Create(T obj, string table)
