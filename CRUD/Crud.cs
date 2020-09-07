@@ -1,41 +1,38 @@
 ﻿using ORM;
 using Students;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace CRUD
 {
-    public class Crud <T> where T : new()
+    public class Crud <T> : DBContext where T : BaseModel, new()
     {
-        private Orm<T> Orm { get; set; }
-
-        public void ConnectToBd(string connectionString)
+        public Crud(string connectionString) : base(connectionString)
         {
-            Orm = Orm<T>.GetInstance(connectionString);
+            Orm = Orm<T>.GetInstance(ConnectionString);
         }
 
-        public void DisConnectToBd() => Orm.DisConnectToBd();
+        private Orm<T> Orm { get; set; }
 
         public List<T> GetFromTable(string tableName)
         {
-            var reader = Orm.GetTable(tableName);
-
+            Connection.Open();
+            var dataCollection = Orm.GetTable(tableName);
+            Connection.Close();
             var collection = new List<T>();
             var typeOfT = typeof(T);
 
             var obj = new T();
 
-            var fieldCount = reader.FieldCount;
-
-            if (reader.HasRows)
+            if (dataCollection != null)
             {
-                while (reader.Read())
+                for (int i = 0; i < dataCollection.Count; i++)
                 {
-                    for (int i = 0; i < fieldCount; i++)
+                    for (int j = 0; j < typeOfT.GetProperties().Count(); j++)
                     {
-                        var fieldName = reader.GetName(i);
-                        var propInfo = typeOfT.GetProperty(fieldName);
-                        propInfo?.SetValue(obj, reader.GetValue(i));
+                        var fieldName = typeOfT.GetProperties();
+                        var propInfo = typeOfT.GetProperty(fieldName[j].Name);
+                        propInfo?.SetValue(obj, propInfo.GetValue(dataCollection[i]));
                     }
                     collection.Add(obj);
                     obj = new T();
@@ -47,27 +44,38 @@ namespace CRUD
 
         public void Create(List<T> obj, string table)
         {
+            Connection.Open();
+
             foreach (var item in obj)
             {
                 Orm.Create(item, table);
             }
+
+            Connection.Close();
         }
 
         public void Update(List<T> obj, string table)
         {
+            Connection.Open();
+
             foreach (var item in obj)
             {
                 Orm.Update(item, table);
             }
+
+            Connection.Close();
         }
 
- 
         public void Dalete(List<T> obj, string table)
         {
+            Connection.Open();
+
             foreach (var item in obj)
             {
                 Orm.Delete(item, table);
             }
+
+            Connection.Close();
         }
     }
 }

@@ -39,16 +39,15 @@ namespace Test
                 reader.Close();
             }*/
 
-            Crud<Student> crudStudent = new Crud<Student>();
-            Crud<Group> crudGroup = new Crud<Group>();
+            Crud<Student> crudStudent = new Crud<Student>(connectionString);
+            Crud<Group> crudGroup = new Crud<Group>(connectionString);
             
             /*List<Group> groups = new List<Group>();
             groups.Add(new Group(11, "IS-11"));
             groups.Add(new Group(12, "IS-12"));*/
-            
-            crudStudent.ConnectToBd(connectionString);
+
             var listStudent = crudStudent.GetFromTable("Students");
-            crudStudent.DisConnectToBd();
+
             /*
             crudGroup.ConnectToBd(connectionString);
             var listGroup = crudGroup.GetFromTable("Groups");

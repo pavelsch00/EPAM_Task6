@@ -1,32 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using ORM.Creators;
+using Students;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 
 namespace ORM
 {
-    public class Orm<T>
+    public class Orm<T> : DBContext where T : BaseModel, new()
     {
         private static Orm<T> instance;
 
-        public Orm(string connectionString)
+        public Orm(string connectionString) : base (connectionString)
         {
-            ConnectionString = connectionString;
-            Connection = new SqlConnection(ConnectionString);
             Properties = new List<PropertyInfo>(typeof(T).GetProperties());
-            Connection.Open();
         }
 
         private List<PropertyInfo> Properties { get; set; }
-
-        private string ConnectionString { get; set; }
-
-        private SqlConnection Connection { get; set; }
-
-        public void ConnectToBd()
-        {
-            Connection.Open();
-        }
 
         public static Orm<T> GetInstance(string connectionString)
         {
@@ -38,15 +28,34 @@ namespace ORM
             return instance;
         }
 
-        public void DisConnectToBd()
-        {
-            Connection.Close();
-        }
-
-        public SqlDataReader GetTable(string tableName)
+        public List<T> GetTable(string tableName)
         {
             var sqlExpression = $"SELECT * FROM {tableName}";
-            return new SqlCommand(sqlExpression, Connection).ExecuteReader();
+            var reader = new SqlCommand(sqlExpression, Connection).ExecuteReader();
+
+            var obj = ModelFactory.CreateModel<T>();
+
+            var collection = new List<T>();
+            var typeOfT = typeof(T);
+
+            var fieldCount = reader.FieldCount;
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    for (int i = 0; i < fieldCount; i++)
+                    {
+                        var fieldName = reader.GetName(i);
+                        var propInfo = typeOfT.GetProperty(fieldName);
+                        propInfo?.SetValue(obj, reader.GetValue(i));
+                    }
+                    collection.Add(obj as T);
+                    obj = new T();
+                }
+            }
+
+            return collection;
         }
 
         public void Create(T obj, string table)
