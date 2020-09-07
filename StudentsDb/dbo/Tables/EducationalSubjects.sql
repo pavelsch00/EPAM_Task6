@@ -5,6 +5,5 @@
     [SubjectType] NVARCHAR (MAX) NOT NULL,
     [Date]        DATE           NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_EducationalSubjectsList_To_Sessions] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Sessions] ([Id])
-);
-
+    CONSTRAINT [FK_EducationalSubjectsList_To_Sessions] FOREIGN KEY ([SessionId]) REFERENCES [dbo].[Sessions] ([Id]) ON DELETE SET NULL
+)

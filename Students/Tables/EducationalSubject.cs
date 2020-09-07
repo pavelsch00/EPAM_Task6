@@ -1,7 +1,8 @@
-﻿using Students.Interfaces;
+﻿using ORM.Creators;
+using Students.Interfaces;
 using System;
 
-namespace Students
+namespace Students.Tables
 {
     public class EducationalSubject : BaseModel, ILern
     {

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ORM.Creators;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Students
+namespace Students.Tables
 {
     public class Session : BaseModel
     {

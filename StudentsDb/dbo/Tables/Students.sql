@@ -5,7 +5,6 @@
     [DateOfBirth] DATE           NULL,
     [GroupId]     INT            NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Student_To_Groups] FOREIGN KEY ([GroupId]) REFERENCES [dbo].[Groups] ([Id]),
-    UNIQUE NONCLUSTERED ([Id] ASC)
-);
-
+    UNIQUE NONCLUSTERED ([Id] ASC),
+    CONSTRAINT [FK_Student_To_Groups] FOREIGN KEY ([GroupId]) REFERENCES [dbo].[Groups] ([Id]) ON DELETE SET NULL
+)

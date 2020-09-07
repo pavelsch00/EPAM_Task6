@@ -1,6 +1,7 @@
 ﻿using CRUD;
 using ORM;
 using Students;
+using Students.Tables;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,40 +14,17 @@ namespace Test
         static void Main(string[] args)
         {
             string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StudentsDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            /*
-            string sqlExpression = "SELECT * FROM Students";
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.HasRows) // если есть данные
-                {
-                    // выводим названия столбцов
-                    Console.WriteLine("{0}\t{1}\t{2}", reader.GetName(0), reader.GetName(1), reader.GetName(2));
 
-                    while (reader.Read()) // построчно считываем данные
-                    {
-                        object id = reader.GetValue(0);
-                        object name = reader.GetValue(1);
-                        object age = reader.GetValue(2);
-                        DateTime ff = DateTime.Parse(reader.GetValue(3).ToString());
-                        Console.WriteLine("{0} \t{1} \t{2} \t{3}", id, name, age, ff.ToShortDateString());
-                    }
-                }
+            //CustomDbSet<Student> crudStudent = new CustomDbSet<Student>(connectionString, "Students");
+            //CustomDbSet<Group> crudGroup = new CustomDbSet<Group>(connectionString, "Groups");
+            var studentDBContext = new StudentDBContext(connectionString);
+            List<Group> groups = new List<Group>();
+            groups.Add(new Group("IS-11"));
+            groups.Add(new Group("IS-12"));
 
-                reader.Close();
-            }*/
-
-            Crud<Student> crudStudent = new Crud<Student>(connectionString);
-            Crud<Group> crudGroup = new Crud<Group>(connectionString);
-            
-            /*List<Group> groups = new List<Group>();
-            groups.Add(new Group(11, "IS-11"));
-            groups.Add(new Group(12, "IS-12"));*/
-
-            var listStudent = crudStudent.GetFromTable("Students");
+            var listGroups = studentDBContext.Group.GetFromTable();
+            studentDBContext.Group.Create( groups, "Groups");
 
             /*
             crudGroup.ConnectToBd(connectionString);
@@ -66,7 +44,7 @@ namespace Test
             List<Student> students = new List<Student>();
             students = orm.GetStudents();
             */
-            foreach (var item in listStudent)
+            foreach (var item in listGroups)
             {
                 Console.WriteLine(item);
             }

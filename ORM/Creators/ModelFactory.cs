@@ -1,5 +1,4 @@
-﻿using Students;
-using System;
+﻿using System;
 
 namespace ORM.Creators
 {

@@ -1,9 +1,10 @@
-﻿using Students.Interfaces;
+﻿using ORM.Creators;
+using Students.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Students
+namespace Students.Tables
 {
     public class Group : BaseModel, IGroup
     {
@@ -26,5 +27,16 @@ namespace Students
         public string Name { get; set; }
 
         public override string ToString() => $"\nGroup Name: {Name}\t";
+
+        public override bool Equals(object obj)
+        {
+            return obj is Group group &&
+                   Name == group.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Id);
+        }
     }
 }

@@ -1,7 +1,8 @@
-﻿using Students.Interfaces;
+﻿using ORM.Creators;
+using Students.Interfaces;
 using System;
 
-namespace Students
+namespace Students.Tables
 {
     public class Student : BaseModel, IStudent
     {
@@ -34,5 +35,19 @@ namespace Students
         public int GroupId { get; set; }
 
         public override string ToString() => $"\nId: {Id}\t FullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth.ToShortDateString()} \tGroupId: {GroupId}";
+
+        public override bool Equals(object obj)
+        {
+            return obj is Student student &&
+                   FullName == student.FullName &&
+                   Gender == student.Gender &&
+                   DateOfBirth == student.DateOfBirth &&
+                   GroupId == student.GroupId;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FullName, Gender, DateOfBirth, GroupId);
+        }
     }
 }

@@ -1,28 +1,30 @@
-﻿using ORM.Creators;
-using Students;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using ORM.Creators;
 
 namespace ORM
 {
-    public class Orm<T> : DBContext where T : BaseModel, new()
+    public class DbOrm<T> where T : BaseModel, new()
     {
-        private static Orm<T> instance;
+        private static DbOrm<T> instance;
 
-        public Orm(string connectionString) : base (connectionString)
+        private DbOrm(string connectionString)
         {
             Properties = new List<PropertyInfo>(typeof(T).GetProperties());
+            Connection = new SqlConnection(connectionString);
         }
+
+        public SqlConnection Connection { get; set; }
 
         private List<PropertyInfo> Properties { get; set; }
 
-        public static Orm<T> GetInstance(string connectionString)
+        public static DbOrm<T> GetInstance(string connectionString)
         {
             if (instance == null)
             {
-                instance = new Orm<T>(connectionString);
+                instance = new DbOrm<T>(connectionString);
             }
 
             return instance;
