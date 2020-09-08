@@ -1,4 +1,5 @@
 ﻿using CRUD;
+using Students.Tables;
 using System;
 using System.Collections.Generic;
 using System.Text;

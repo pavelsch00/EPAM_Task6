@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CRUD\CRUD.csproj" />
-    <ProjectReference Include="..\ORM\ORM.csproj" />
+    <PackageReference Include="IronXL.Excel" Version="2020.9.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Reports\" />
+    <ProjectReference Include="..\CRUD\CRUD.csproj" />
+    <ProjectReference Include="..\ORM\ORM.csproj" />
   </ItemGroup>
 
 </Project>
