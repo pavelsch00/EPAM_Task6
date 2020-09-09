@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Students.Tables
+namespace Students.Objects
 {
     public class Group : BaseModel, IGroup
     {

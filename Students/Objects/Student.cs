@@ -1,17 +1,18 @@
 ﻿using ORM.Creators;
-using Students.Interfaces;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Students.Tables
+namespace Students.Objects
 {
-    public class Student : BaseModel, IStudent
+    public class Student : BaseModel
     {
-        public Student(string fullName, string gender, string dateofBirth, int groupId)
+        public Student(string fullName, string gender, string dateofBirth, Group group)
         {
             FullName = fullName;
             Gender = gender;
             DateOfBirth = DateTime.Parse(dateofBirth);
-            GroupId = groupId;
+            Group = group;
         }
 
         public Student(string fullName, string gender, string dateofBirth)
@@ -32,22 +33,23 @@ namespace Students.Tables
 
         public DateTime DateOfBirth { get; set; }
 
+        public Group Group { get; set; }
+
         public int GroupId { get; set; }
 
-        public override string ToString() => $"\nId: {Id}\t FullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth.ToShortDateString()} \tGroupId: {GroupId}";
+        public override string ToString() => $"\nFullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth.ToShortDateString()} {Group}";
 
         public override bool Equals(object obj)
         {
             return obj is Student student &&
                    FullName == student.FullName &&
                    Gender == student.Gender &&
-                   DateOfBirth == student.DateOfBirth &&
-                   GroupId == student.GroupId;
+                   DateOfBirth == student.DateOfBirth;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(FullName, Gender, DateOfBirth, GroupId);
+            return HashCode.Combine(FullName, Gender, DateOfBirth);
         }
     }
 }

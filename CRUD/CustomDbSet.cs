@@ -10,12 +10,15 @@ namespace CRUD
     {
         private readonly string _tableName;
 
-        public CustomDbSet(string connectionString, string tableName)
+        private FabricBaseModel _fabricBaseModel;
+
+        public CustomDbSet(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
-            Orm = DbOrm<T>.GetInstance(connectionString);
+            Orm = DbOrm<T>.GetInstance(connectionString, fabricBaseModel);
             Connection = Orm.Connection;
             Collection = new List<T>();
             _tableName = tableName;
+            _fabricBaseModel = fabricBaseModel;
         }
 
         public SqlConnection Connection { get; set; }
@@ -31,7 +34,7 @@ namespace CRUD
             Connection.Close();
 
             var typeOfT = typeof(T);
-            var obj = ModelFactory.CreateModel<T>();
+            var obj = _fabricBaseModel.Create();
 
             if(Collection.Count != 0)
             {
@@ -49,14 +52,14 @@ namespace CRUD
                         propInfo?.SetValue(obj, propInfo.GetValue(dataCollection[i]));
                     }
                     Collection.Add((T)obj);
-                    obj = ModelFactory.CreateModel<T>();
+                    obj = _fabricBaseModel.Create();
                 }
             }
 
             return Collection;
         }
 
-        public void Create(List<T> collection, string table)
+        public void Create(List<T> collection)
         {
             if (Collection.Count == 0)
             {
@@ -72,13 +75,13 @@ namespace CRUD
 
             foreach (var item in collection)
             {
-                Orm.Create(item, table);
+                Orm.Create(item, _tableName);
             }
 
             Connection.Close();
         }
 
-        public void Update(List<T> obj, string table)
+        public void Update(List<T> obj)
         {
             if (Collection.Count == 0)
             {
@@ -89,13 +92,13 @@ namespace CRUD
 
             foreach (var item in obj)
             {
-                Orm.Update(item, table);
+                Orm.Update(item, _tableName);
             }
 
             Connection.Close();
         }
 
-        public void Dalete(List<T> obj, string table)
+        public void Dalete(List<T> obj)
         {
             if (Collection.Count == 0)
             {
@@ -106,7 +109,7 @@ namespace CRUD
 
             foreach (var item in obj)
             {
-                Orm.Delete(item, table);
+                Orm.Delete(item, _tableName);
             }
 
             Connection.Close();

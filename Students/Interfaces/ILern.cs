@@ -6,7 +6,7 @@ namespace Students.Interfaces
 {
     public interface ILern
     {
-        public string Name { get; set; }
+        public string SubjectName { get; set; }
 
         public DateTime Date { get; set; }
     }

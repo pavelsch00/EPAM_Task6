@@ -10,21 +10,24 @@ namespace ORM
     {
         private static DbOrm<T> instance;
 
-        private DbOrm(string connectionString)
+        private FabricBaseModel _fabricBaseModel;
+
+        private DbOrm(string connectionString, FabricBaseModel fabricBaseModel)
         {
             Properties = new List<PropertyInfo>(typeof(T).GetProperties());
             Connection = new SqlConnection(connectionString);
+            _fabricBaseModel = fabricBaseModel;
         }
 
         public SqlConnection Connection { get; set; }
 
         private List<PropertyInfo> Properties { get; set; }
 
-        public static DbOrm<T> GetInstance(string connectionString)
+        public static DbOrm<T> GetInstance(string connectionString, FabricBaseModel fabricBaseModel)
         {
             if (instance == null)
             {
-                instance = new DbOrm<T>(connectionString);
+                instance = new DbOrm<T>(connectionString, fabricBaseModel);
             }
 
             return instance;
@@ -35,7 +38,7 @@ namespace ORM
             var sqlExpression = $"SELECT * FROM {tableName}";
             var reader = new SqlCommand(sqlExpression, Connection).ExecuteReader();
 
-            var obj = ModelFactory.CreateModel<T>();
+            var obj = _fabricBaseModel.Create();
 
             var collection = new List<T>();
             var typeOfT = typeof(T);
@@ -52,8 +55,8 @@ namespace ORM
                         var propInfo = typeOfT.GetProperty(fieldName);
                         propInfo?.SetValue(obj, reader.GetValue(i));
                     }
-                    collection.Add(obj as T);
-                    obj = new T();
+                    collection.Add((T)obj);
+                    obj = _fabricBaseModel.Create();
                 }
             }
 

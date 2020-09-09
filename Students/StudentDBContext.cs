@@ -1,5 +1,6 @@
 ﻿using CRUD;
-using Students.Tables;
+using Students.Creators.Objects;
+using Students.Objects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,11 +11,11 @@ namespace Students
     {
         public StudentDBContext(string connectionString) : base(connectionString)
         {
-            EducationalSubject = new CustomDbSet<EducationalSubject>(ConnectionString, "EducationalSubjects");
-            Group = new CustomDbSet<Group>(ConnectionString, "Groups");
-            Session = new CustomDbSet<Session>(ConnectionString, "Sessions");
-            Student = new CustomDbSet<Student>(ConnectionString, "Students");
-            StudentResult = new CustomDbSet<StudentResult>(ConnectionString, "StudentResults");
+            EducationalSubject = new CustomDbSet<EducationalSubject>(ConnectionString, "EducationalSubjects", new EducationalSubjectCreator());
+            Group = new CustomDbSet<Group>(ConnectionString, "Groups", new GroupCreator());
+            Session = new CustomDbSet<Session>(ConnectionString, "Sessions", new SessionCreator());
+            Student = new CustomDbSet<Student>(ConnectionString, "Students", new StudentCreator());
+            StudentResult = new CustomDbSet<StudentResult>(ConnectionString, "StudentResults", new StudentResultCreator());
         }
 
         public CustomDbSet<EducationalSubject> EducationalSubject { get; set; }
