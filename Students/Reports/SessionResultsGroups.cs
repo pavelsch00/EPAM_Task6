@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Students.WorkWithCrud;
 using System.Linq;
 using Microsoft.Office.Interop.Excel;
 using Students.Objects;
+using Students.WorkWithORM;
+using Students.WorkWithCrud;
 
 namespace Students.Reports
 {
@@ -13,38 +13,9 @@ namespace Students.Reports
         public SessionResultsGroups(string connectionString)
         {
             StudentDBContext = new StudentDBContext(connectionString);
-
-            StudentDBContext.Student.GetFromTable();
-            StudentDBContext.Session.GetFromTable();
-            StudentDBContext.Group.GetFromTable();
-            StudentDBContext.SessionEducationalSubject.GetFromTable();
-            StudentDBContext.EducationalSubject.GetFromTable();
-            StudentDBContext.StudentResult.GetFromTable();
-
-            SetRelationDbSet();
         }
 
         public StudentDBContext StudentDBContext { get; set; }
-
-        private void SetRelationDbSet()
-        {
-            StudentDBContext.Student.Collection = SetRelation.BindStudentWithGroup(
-                StudentDBContext.Student.Collection,
-                StudentDBContext.Group.Collection);
-
-            StudentDBContext.Session.Collection = SetRelation.BindSessionWithGroup(
-                StudentDBContext.Session.Collection,
-                StudentDBContext.Group.Collection);
-
-            StudentDBContext.SessionEducationalSubject.Collection = SetRelation.BindSessionEducationalSubjectWithSession(
-                StudentDBContext.SessionEducationalSubject.Collection,
-                StudentDBContext.Session.Collection,
-                StudentDBContext.EducationalSubject.Collection);
-
-            StudentDBContext.StudentResult.Collection = SetRelation.BindStudentResultWithStudent(
-                StudentDBContext.StudentResult.Collection, StudentDBContext.Student.Collection,
-                StudentDBContext.SessionEducationalSubject.Collection);
-        }
 
         public void GenerateSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
         {
@@ -76,16 +47,6 @@ namespace Students.Reports
 
             workBook.Close(true, @"D:\test1.xlsx");
             excelApp.Quit();
-        }
-
-        private static void SortSheet(Worksheet workSheet, int maxLine, int sortableSheet, XlSortOrder xlSortOrder)
-        {
-            var rngSort = workSheet.get_Range("A1", $"F{maxLine}");
-            rngSort.Sort(rngSort.Columns[sortableSheet, Type.Missing], xlSortOrder,
-            null, Type.Missing, XlSortOrder.xlAscending,
-            Type.Missing, XlSortOrder.xlAscending,
-            XlYesNoGuess.xlYes, Type.Missing, Type.Missing,
-            XlSortOrientation.xlSortColumns);
         }
 
         public void GenerateAverageSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
@@ -138,7 +99,7 @@ namespace Students.Reports
 
             SortSheet(workSheet, i, sortableSheet, xlSortOrder);
 
-            workBook.Close(true, @"D:\test2.xlsx");
+            workBook.Close(true, @"D:\test4.xlsx");
             excelApp.Quit();
         }
 
@@ -175,6 +136,16 @@ namespace Students.Reports
             workBook.Close(true, @"D:\test3.xlsx");
 
             excelApp.Quit();
+        }
+
+        private static void SortSheet(Worksheet workSheet, int maxLine, int sortableSheet, XlSortOrder xlSortOrder)
+        {
+            var rngSort = workSheet.get_Range("A1", $"F{maxLine}");
+            rngSort.Sort(rngSort.Columns[sortableSheet, Type.Missing], xlSortOrder,
+            null, Type.Missing, XlSortOrder.xlAscending,
+            Type.Missing, XlSortOrder.xlAscending,
+            XlYesNoGuess.xlYes, Type.Missing, Type.Missing,
+            XlSortOrientation.xlSortColumns);
         }
 
         private static List<double> GetResultStudentForGroup(List<StudentResult> listStudentResults, int sessionId, int groupId)

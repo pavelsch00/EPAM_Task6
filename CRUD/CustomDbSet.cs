@@ -4,7 +4,7 @@ using System.Linq;
 using ORM;
 using ORM.Creators;
 
-namespace CRUD
+namespace ORM
 {
     public class CustomDbSet<T> where T : BaseModel, new()
     {
@@ -16,7 +16,7 @@ namespace CRUD
         {
             _tableName = tableName;
             _fabricBaseModel = fabricBaseModel;
-            Orm = DbOrm<T>.GetInstance(connectionString, _tableName, _fabricBaseModel);
+            Orm = DbCrud<T>.GetInstance(connectionString, _tableName, _fabricBaseModel);
             Connection = Orm.Connection;
             Collection = new List<T>();
         }
@@ -25,7 +25,7 @@ namespace CRUD
 
         public List<T> Collection { get; set; }
 
-        private DbOrm<T> Orm { get; set; }
+        private DbCrud<T> Orm { get; set; }
 
         public List<T> GetFromTable()
         {

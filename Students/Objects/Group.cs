@@ -1,8 +1,6 @@
 ﻿using ORM.Creators;
 using Students.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Students.Objects
 {

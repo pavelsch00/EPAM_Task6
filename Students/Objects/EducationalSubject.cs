@@ -1,7 +1,4 @@
 ﻿using ORM.Creators;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Students.Objects
 {

@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CRUD\CRUD.csproj" />
     <ProjectReference Include="..\ORM\ORM.csproj" />
   </ItemGroup>
 

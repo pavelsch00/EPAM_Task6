@@ -6,17 +6,19 @@ using ORM.Creators;
 
 namespace ORM
 {
-    public class DbOrm<T> where T : BaseModel, new()
+    public class WorkWithDb<T> where T : BaseModel, new()
     {
-        private static DbOrm<T> instance;
+        private static WorkWithDb<T> instance;
 
-        private FabricBaseModel _fabricBaseModel;
+        private readonly FabricBaseModel _fabricBaseModel;
 
         private readonly string _tableName;
 
-        private DbOrm(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
+        private readonly List<PropertyInfo> _properties;
+
+        private WorkWithDb(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
-            Properties = new List<PropertyInfo>(typeof(T).GetProperties());
+            _properties = new List<PropertyInfo>(typeof(T).GetProperties());
             Connection = new SqlConnection(connectionString);
             _fabricBaseModel = fabricBaseModel;
             _tableName = tableName;
@@ -24,26 +26,24 @@ namespace ORM
 
         public SqlConnection Connection { get; set; }
 
-        private List<PropertyInfo> Properties { get; set; }
-
-        public static DbOrm<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
+        public static WorkWithDb<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             if (instance == null)
             {
-                instance = new DbOrm<T>(connectionString, tableName, fabricBaseModel);
+                instance = new WorkWithDb<T>(connectionString, tableName, fabricBaseModel);
             }
 
             return instance;
         }
 
-        public List<T> GetTable()
+        public List<T> Read()
         {
             var sqlExpression = $"SELECT * FROM {_tableName}";
 
             var sqlCommand = new SqlCommand(sqlExpression, Connection);
             sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
 
-            var reader = sqlCommand.ExecuteReader();
+            SqlDataReader reader = sqlCommand.ExecuteReader();
             var obj = _fabricBaseModel.Create();
 
             var collection = new List<T>();
@@ -88,7 +88,7 @@ namespace ORM
 
             sqlExpression += ") VALUES (";
 
-            foreach (var item in Properties)
+            foreach (var item in _properties)
             {
                 if (item.Name == "Id")
                 {
@@ -104,7 +104,7 @@ namespace ORM
             var sqlCommand = new SqlCommand(sqlExpression, Connection);
             sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
             int i = 1;
-            foreach (var property in Properties)
+            foreach (var property in _properties)
             {
                 if (property.Name == "Id")
                 {
@@ -126,7 +126,7 @@ namespace ORM
             string idName = null;
             object idValue = null;
 
-            foreach (var item in Properties)
+            foreach (var item in _properties)
             {
                 if (item.Name == "Id")
                 {
@@ -146,7 +146,7 @@ namespace ORM
         public void Delete(T obj)
         {
             string sqlExpression = $"DELETE FROM {_tableName} WHERE ";
-            var property = Properties.First(item => item.Name == "Id");
+            var property = _properties.First(item => item.Name == "Id");
 
             sqlExpression += $"{property.Name} ='{property.GetValue(obj)}';";
 
