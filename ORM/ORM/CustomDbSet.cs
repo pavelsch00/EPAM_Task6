@@ -7,13 +7,13 @@ namespace ORM
 {
     public class CustomDbSet<T> where T : BaseModel, new()
     {
+        private static CustomDbSet<T> _instance;
+
         private readonly string _tableName;
 
         private readonly SqlConnection _connection;
 
-        private static CustomDbSet<T> _instance;
-
-        private WorkWithDb<T> _workWithDb;
+        private readonly WorkWithDb<T> _workWithDb;
 
         private CustomDbSet(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
@@ -61,25 +61,29 @@ namespace ORM
             _connection.Close();
         }
 
-        public void Сhange(List<T> obj)
+        public void Add(T addObj)
         {
-            foreach (var item in obj)
+            _connection.Open();
+
+            if(addObj != Collection.Select(item => item))
             {
-                _workWithDb.Update(item);
+                _workWithDb.Create(addObj);
             }
 
             _connection.Close();
         }
 
-        public void Remove(List<T> obj)
+        public void Сhange(int id, T item)
         {
             _connection.Open();
+            _workWithDb.Update(id, item);
+            _connection.Close();
+        }
 
-            foreach (var item in obj)
-            {
-                _workWithDb.Delete(item);
-            }
-
+        public void Remove(int id)
+        {
+            _connection.Open();
+            _workWithDb.Delete(id);
             _connection.Close();
         }
     }
