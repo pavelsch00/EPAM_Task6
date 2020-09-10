@@ -12,32 +12,38 @@ namespace ORM
 
         private FabricBaseModel _fabricBaseModel;
 
-        private DbOrm(string connectionString, FabricBaseModel fabricBaseModel)
+        private readonly string _tableName;
+
+        private DbOrm(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             Properties = new List<PropertyInfo>(typeof(T).GetProperties());
             Connection = new SqlConnection(connectionString);
             _fabricBaseModel = fabricBaseModel;
+            _tableName = tableName;
         }
 
         public SqlConnection Connection { get; set; }
 
         private List<PropertyInfo> Properties { get; set; }
 
-        public static DbOrm<T> GetInstance(string connectionString, FabricBaseModel fabricBaseModel)
+        public static DbOrm<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             if (instance == null)
             {
-                instance = new DbOrm<T>(connectionString, fabricBaseModel);
+                instance = new DbOrm<T>(connectionString, tableName, fabricBaseModel);
             }
 
             return instance;
         }
 
-        public List<T> GetTable(string tableName)
+        public List<T> GetTable()
         {
-            var sqlExpression = $"SELECT * FROM {tableName}";
-            var reader = new SqlCommand(sqlExpression, Connection).ExecuteReader();
+            var sqlExpression = $"SELECT * FROM {_tableName}";
 
+            var sqlCommand = new SqlCommand(sqlExpression, Connection);
+            sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
+
+            var reader = sqlCommand.ExecuteReader();
             var obj = _fabricBaseModel.Create();
 
             var collection = new List<T>();
@@ -63,10 +69,11 @@ namespace ORM
             return collection;
         }
 
-        public void Create(T obj, string table)
+        public void Create(T obj)
         {
-            var sqlExpression = $"INSERT INTO {table} (";
-
+            var sqlExpression = $"INSERT INTO {_tableName} (";
+            var parameterName = new List<string>();
+            parameterName.Add(_tableName);
             foreach (var property in typeof(T).GetProperties())
             {
                 if (property.Name == "Id")
@@ -74,7 +81,8 @@ namespace ORM
                     continue;
                 }
 
-                sqlExpression += property.Name + ",";
+                sqlExpression += "@" + property.Name + ",";
+                parameterName.Add("@" + property.Name);
             }
             sqlExpression = sqlExpression.Remove(sqlExpression.Length - 1);
 
@@ -94,12 +102,26 @@ namespace ORM
             sqlExpression += ");";
 
             var sqlCommand = new SqlCommand(sqlExpression, Connection);
+            sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
+            int i = 1;
+            foreach (var property in Properties)
+            {
+                if (property.Name == "Id")
+                {
+                    continue;
+                }
+
+                var propValue = property.GetValue(obj);
+                sqlCommand.Parameters.AddWithValue(parameterName[i], propValue);
+                i++;
+            }
+
             sqlCommand.ExecuteNonQuery();
         }
 
-        public void Update(T obj, string table)
+        public void Update(T obj)
         {
-            var sqlExpression = $"UPDATE {table} SET ";
+            var sqlExpression = $"UPDATE {_tableName} SET ";
 
             string idName = null;
             object idValue = null;
@@ -121,9 +143,9 @@ namespace ORM
             sqlCommand.ExecuteNonQuery();
         }
 
-        public void Delete(T obj, string table)
+        public void Delete(T obj)
         {
-            string sqlExpression = $"DELETE FROM {table} WHERE ";
+            string sqlExpression = $"DELETE FROM {_tableName} WHERE ";
             var property = Properties.First(item => item.Name == "Id");
 
             sqlExpression += $"{property.Name} ='{property.GetValue(obj)}';";

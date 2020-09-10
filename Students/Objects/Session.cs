@@ -20,7 +20,7 @@ namespace Students.Objects
 
         public Session()
         {
-
+            Group = new Group();
         }
 
         public int GroupId { get; set; }
@@ -30,5 +30,17 @@ namespace Students.Objects
         public int SessionNumber { get; set; }
 
         public override string ToString() => $"\nSession Number: {SessionNumber} {Group}";
+
+        public override bool Equals(object obj)
+        {
+            return obj is Session session &&
+                   GroupId == session.GroupId &&
+                   SessionNumber == session.SessionNumber;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(GroupId, Group, SessionNumber);
+        }
     }
 }

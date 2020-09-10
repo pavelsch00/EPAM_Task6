@@ -24,7 +24,7 @@ namespace Students.Objects
 
         public Student()
         {
-
+            Group = new Group();
         }
 
         public string FullName { get; set; }

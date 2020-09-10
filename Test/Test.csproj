@@ -11,4 +11,10 @@
     <ProjectReference Include="..\Students\Students.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Interop.Microsoft.Office.Interop.Excel">
+      <HintPath>..\Students\obj\Debug\netcoreapp3.1\Interop.Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

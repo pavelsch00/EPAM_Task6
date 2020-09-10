@@ -14,11 +14,11 @@ namespace CRUD
 
         public CustomDbSet(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
-            Orm = DbOrm<T>.GetInstance(connectionString, fabricBaseModel);
-            Connection = Orm.Connection;
-            Collection = new List<T>();
             _tableName = tableName;
             _fabricBaseModel = fabricBaseModel;
+            Orm = DbOrm<T>.GetInstance(connectionString, _tableName, _fabricBaseModel);
+            Connection = Orm.Connection;
+            Collection = new List<T>();
         }
 
         public SqlConnection Connection { get; set; }
@@ -30,7 +30,7 @@ namespace CRUD
         public List<T> GetFromTable()
         {
             Connection.Open();
-            var dataCollection = Orm.GetTable(_tableName);
+            var dataCollection = Orm.GetTable();
             Connection.Close();
 
             var typeOfT = typeof(T);
@@ -75,7 +75,7 @@ namespace CRUD
 
             foreach (var item in collection)
             {
-                Orm.Create(item, _tableName);
+                Orm.Create(item);
             }
 
             Connection.Close();
@@ -92,7 +92,7 @@ namespace CRUD
 
             foreach (var item in obj)
             {
-                Orm.Update(item, _tableName);
+                Orm.Update(item);
             }
 
             Connection.Close();
@@ -109,7 +109,7 @@ namespace CRUD
 
             foreach (var item in obj)
             {
-                Orm.Delete(item, _tableName);
+                Orm.Delete(item);
             }
 
             Connection.Close();

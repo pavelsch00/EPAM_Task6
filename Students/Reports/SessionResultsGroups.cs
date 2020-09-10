@@ -1,46 +1,187 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using IronXL;
+using Students.WorkWithCrud;
+using System.Linq;
+using Microsoft.Office.Interop.Excel;
+using Students.Objects;
 
 namespace Students.Reports
 {
     public class SessionResultsGroups
     {
-        public static void GenerateSessionReport(int sessionNumber, string filePath)
+        public SessionResultsGroups(string connectionString)
         {
-            /*CustomORM orm = CustomORM.Instance;
-            List<Session> sessions = orm.Sessions.Where(obj => obj.SemesterNumber == sessionNumber).ToList();
+            StudentDBContext = new StudentDBContext(connectionString);
 
-            foreach (Session session in sessions)
+            StudentDBContext.Student.GetFromTable();
+            StudentDBContext.Session.GetFromTable();
+            StudentDBContext.Group.GetFromTable();
+            StudentDBContext.SessionEducationalSubject.GetFromTable();
+            StudentDBContext.EducationalSubject.GetFromTable();
+            StudentDBContext.StudentResult.GetFromTable();
+
+            SetRelationDbSet();
+        }
+
+        public StudentDBContext StudentDBContext { get; set; }
+
+        private void SetRelationDbSet()
+        {
+            StudentDBContext.Student.Collection = SetRelation.BindStudentWithGroup(
+                StudentDBContext.Student.Collection,
+                StudentDBContext.Group.Collection);
+
+            StudentDBContext.Session.Collection = SetRelation.BindSessionWithGroup(
+                StudentDBContext.Session.Collection,
+                StudentDBContext.Group.Collection);
+
+            StudentDBContext.SessionEducationalSubject.Collection = SetRelation.BindSessionEducationalSubjectWithSession(
+                StudentDBContext.SessionEducationalSubject.Collection,
+                StudentDBContext.Session.Collection,
+                StudentDBContext.EducationalSubject.Collection);
+
+            StudentDBContext.StudentResult.Collection = SetRelation.BindStudentResultWithStudent(
+                StudentDBContext.StudentResult.Collection, StudentDBContext.Student.Collection,
+                StudentDBContext.SessionEducationalSubject.Collection);
+        }
+
+        public void GenerateSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
+        {
+            Application excelApp = new Application();
+            Workbook workBook = excelApp.Workbooks.Add();
+            Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
+
+            workSheet.Cells[1, "A"] = "Session";
+            workSheet.Cells[1, "B"] = "Group";
+            workSheet.Cells[1, "C"] = "Student";
+            workSheet.Cells[1, "D"] = "EducationSubject";
+            workSheet.Cells[1, "E"] = "Type";
+            workSheet.Cells[1, "F"] = "Mark";
+
+            int i = 2;
+
+            foreach (var item in StudentDBContext.StudentResult.Collection)
             {
-                session.Group = orm.Groups.First(obj => obj.ID == session.GroupID);
-                session.Group.Students = orm.Students.Where(obj => obj.GroupID == session.GroupID).ToList();
+                workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.SessionNumber;
+                workSheet.Cells[i, "B"] = item.SessionEducationalSubject.Session.Group.Name;
+                workSheet.Cells[i, "C"] = item.Student.FullName;
+                workSheet.Cells[i, "D"] = item.SessionEducationalSubject.EducationalSubject.SubjectName;
+                workSheet.Cells[i, "E"] = item.SessionEducationalSubject.EducationalSubject.SubjectType;
+                workSheet.Cells[i, "F"] = item.Mark;
+                i++;
+            }
 
-                foreach (Student student in session.Group.Students)
+            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
+
+            workBook.Close(true, @"D:\test1.xlsx");
+            excelApp.Quit();
+        }
+
+        private static void SortSheet(Worksheet workSheet, int maxLine, int sortableSheet, XlSortOrder xlSortOrder)
+        {
+            var rngSort = workSheet.get_Range("A1", $"F{maxLine}");
+            rngSort.Sort(rngSort.Columns[sortableSheet, Type.Missing], xlSortOrder,
+            null, Type.Missing, XlSortOrder.xlAscending,
+            Type.Missing, XlSortOrder.xlAscending,
+            XlYesNoGuess.xlYes, Type.Missing, Type.Missing,
+            XlSortOrientation.xlSortColumns);
+        }
+
+        public void GenerateAverageSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
+        {
+            Application excelApp = new Application();
+            Workbook workBook = excelApp.Workbooks.Add();
+            Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
+
+            workSheet.Cells[1, "A"] = "Session";
+            workSheet.Cells[1, "B"] = "Group";
+            workSheet.Cells[1, "C"] = "Average Mark";
+            workSheet.Cells[1, "D"] = "Min Mark";
+            workSheet.Cells[1, "E"] = "Max Mark";
+
+            int i = 2;
+
+            List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.SessionEducationalSubject.SessionId).Distinct().ToList();
+
+            foreach (var item in StudentDBContext.StudentResult.Collection)
+            {
+                if (temp.Where(obj => obj == item?.SessionEducationalSubject?.SessionId).Select(obj => obj).Count() == 1)
                 {
-                    student.ExamResults = orm.ExamResults.Where(obj => obj.StudentID == student.ID).ToList();
+                    workSheet.Cells[i, "A"] = item?.SessionEducationalSubject?.Session?.SessionNumber;
+                    workSheet.Cells[i, "B"] = item?.SessionEducationalSubject?.Session?.Group.Name;
+
+                    workSheet.Cells[i, "C"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                        .Where(item => item.SessionEducationalSubject?
+                        .EducationalSubject.SubjectType == "Exam")
+                        .Select(item => item).ToList(),
+                        item.SessionEducationalSubject.SessionId,
+                        item.SessionEducationalSubject.Session.GroupId).Average();
+
+                    workSheet.Cells[i, "D"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                        .Where(item => item.SessionEducationalSubject?
+                        .EducationalSubject.SubjectType == "Exam")
+                        .Select(item => item).ToList(),
+                        item.SessionEducationalSubject.SessionId,
+                        item.SessionEducationalSubject.Session.GroupId).Min();
+
+                    workSheet.Cells[i, "E"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                        .Where(item => item.SessionEducationalSubject?
+                        .EducationalSubject.SubjectType == "Exam")
+                        .Select(item => item).ToList(),
+                        item.SessionEducationalSubject.SessionId,
+                        item.SessionEducationalSubject.Session.GroupId).Max();
+                    i++;
+                    temp.Add(item.SessionEducationalSubject.SessionId);
                 }
             }
 
-            var fileXLSX = WorkBook.Create(ExcelFileFormat.XLSX);
-            fileXLSX.Metadata.Title = "IronXL New File";
-            var workSheet = fileXLSX.CreateWorkSheet("SessionReport");
+            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
 
-            workSheet["A1"].Value = nameof(Session);
-            workSheet["B1"].Value = nameof(Group);
-            workSheet["C1"].Value = "Average Mark";
+            workBook.Close(true, @"D:\test2.xlsx");
+            excelApp.Quit();
+        }
 
-            int cellNumber = 2;
+        public void GetBadStudent(int sortableSheet, XlSortOrder xlSortOrder)
+        {
+            Application excelApp = new Application();
+            Workbook workBook = excelApp.Workbooks.Add();
+            Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
 
-            foreach (Session session in sessions)
+            workSheet.Cells[1, "A"] = "Group";
+            workSheet.Cells[1, "B"] = "Student";
+
+            int i = 2;
+            int tempMark = 4;
+
+            List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.StudentId).Distinct().ToList();
+
+            foreach (var item in StudentDBContext.StudentResult.Collection)
             {
-                workSheet[$"A{cellNumber}"].Value = session.SemesterNumber;
-                workSheet[$"B{cellNumber}"].Value = session.Group.Name;
-                workSheet[$"C{cellNumber}"].Value = GetAverageMarkForGroup(session.Group);
+                int.TryParse(item.Mark, out tempMark);
+                if (temp.Where(obj => obj == item.StudentId).Select(obj => obj).Count() == 1 &&
+                    ((tempMark < 4 && tempMark != 0) || item.Mark == "Not Passed"))
+                {
+                    workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.Group.Name;
+                    workSheet.Cells[i, "B"] = item.Student.FullName;
+                    temp.Add(item.StudentId);
+                    i++;
+                }
+            
             }
 
-            fileXLSX.SaveAs(filePath);*/
+            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
+
+            workBook.Close(true, @"D:\test3.xlsx");
+
+            excelApp.Quit();
+        }
+
+        private static List<double> GetResultStudentForGroup(List<StudentResult> listStudentResults, int sessionId, int groupId)
+        {
+            return listStudentResults.Where(item => item.SessionEducationalSubject.SessionId == sessionId 
+            && item.SessionEducationalSubject.Session.GroupId == groupId)
+                .Select(item => double.Parse(item.Mark)).ToList();
         }
     }
 }

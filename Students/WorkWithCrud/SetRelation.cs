@@ -36,7 +36,8 @@ namespace Students.WorkWithCrud
             return bindStudents;
         }
 
-        public static List<StudentResult> BindStudentResultWithStudent(List<StudentResult> studentResults, List<Student> students, List<EducationalSubject> educationalSubjects)
+
+        public static List<StudentResult> BindStudentResultWithStudent(List<StudentResult> studentResults, List<Student> students, List<SessionEducationalSubject> educationalSubjects)
         {
             var bindStudentResults = new List<StudentResult>();
             StudentResult tempStudentResult = null;
@@ -44,21 +45,22 @@ namespace Students.WorkWithCrud
             {
                 tempStudentResult = item;
                 tempStudentResult.Student = students.Where(obj => obj.Id == item.StudentId).Select(item => item).FirstOrDefault();
-                tempStudentResult.EducationalSubject = educationalSubjects.Where(obj => obj.Id == item.EducationalSubjectId).Select(item => item).FirstOrDefault();
+                tempStudentResult.SessionEducationalSubject = educationalSubjects.Where(obj => obj.Id == item.EducationalSubjectId).Select(item => item).FirstOrDefault();
                 bindStudentResults.Add(tempStudentResult);
             }
 
             return bindStudentResults;
         }
 
-        public static List<EducationalSubject> BindEducationalSubjectWithSession(List<EducationalSubject> studentResults, List<Session> session)
+        public static List<SessionEducationalSubject> BindSessionEducationalSubjectWithSession(List<SessionEducationalSubject> studentResults, List<Session> session, List<EducationalSubject> educationalSubject)
         {
-            var bindStudentResults = new List<EducationalSubject>();
-            EducationalSubject tempStudentResult = null;
+            var bindStudentResults = new List<SessionEducationalSubject>();
+            SessionEducationalSubject tempStudentResult = null;
             foreach (var item in studentResults)
             {
                 tempStudentResult = item;
                 tempStudentResult.Session = session.Where(obj => obj.Id == item.SessionId).Select(item => item).FirstOrDefault();
+                tempStudentResult.EducationalSubject = educationalSubject.Where(obj => obj.Id == item.EducationalSubjectId).Select(item => item).FirstOrDefault();
                 bindStudentResults.Add(tempStudentResult);
             }
 
