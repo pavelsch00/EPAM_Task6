@@ -1,9 +1,10 @@
-﻿using ORM.Creators;
-using System;
+﻿using System;
+using ORM.Creators;
+using Students.Interfaces;
 
 namespace Students.Objects
 {
-    public class Session : BaseModel
+    public class Session : BaseModel, ISession
     {
         public Session(int number, Group group)
         {
@@ -29,16 +30,10 @@ namespace Students.Objects
 
         public override string ToString() => $"\nSession Number: {SessionNumber} {Group}";
 
-        public override bool Equals(object obj)
-        {
-            return obj is Session session &&
+        public override bool Equals(object obj) => obj is Session session &&
                    GroupId == session.GroupId &&
                    SessionNumber == session.SessionNumber;
-        }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(GroupId, Group, SessionNumber);
-        }
+        public override int GetHashCode() => HashCode.Combine(GroupId, SessionNumber);
     }
 }

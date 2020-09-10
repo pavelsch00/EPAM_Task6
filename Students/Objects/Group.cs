@@ -26,15 +26,8 @@ namespace Students.Objects
 
         public override string ToString() => $"\nGroup Name: {Name}\t";
 
-        public override bool Equals(object obj)
-        {
-            return obj is Group group &&
-                   Name == group.Name;
-        }
+        public override bool Equals(object obj) => obj is Group group && Name == group.Name;
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name, Id);
-        }
+        public override int GetHashCode() => HashCode.Combine(Name);
     }
 }

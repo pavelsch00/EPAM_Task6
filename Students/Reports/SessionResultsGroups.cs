@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Office.Interop.Excel;
 using Students.Objects;
 using Students.WorkWithORM;
-using Students.WorkWithCrud;
 
 namespace Students.Reports
 {
@@ -45,8 +44,15 @@ namespace Students.Reports
 
             SortSheet(workSheet, i, sortableSheet, xlSortOrder);
 
-            workBook.Close(true, @"D:\test1.xlsx");
-            excelApp.Quit();
+            try
+            {
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report1.xlsx");
+                excelApp.Quit();
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("Invalid path to file.");
+            }
         }
 
         public void GenerateAverageSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
@@ -99,8 +105,15 @@ namespace Students.Reports
 
             SortSheet(workSheet, i, sortableSheet, xlSortOrder);
 
-            workBook.Close(true, @"D:\test4.xlsx");
-            excelApp.Quit();
+            try
+            {
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report2.xlsx");
+                excelApp.Quit();
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("Invalid path to file.");
+            }
         }
 
         public void GetBadStudent(int sortableSheet, XlSortOrder xlSortOrder)
@@ -133,9 +146,15 @@ namespace Students.Reports
 
             SortSheet(workSheet, i, sortableSheet, xlSortOrder);
 
-            workBook.Close(true, @"D:\test3.xlsx");
-
-            excelApp.Quit();
+            try
+            {
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report3.xlsx");
+                excelApp.Quit();
+            }
+            catch (ArgumentException)
+            {
+                throw new ArgumentException("Invalid path to file.");
+            }
         }
 
         private static void SortSheet(Worksheet workSheet, int maxLine, int sortableSheet, XlSortOrder xlSortOrder)

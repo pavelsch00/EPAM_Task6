@@ -43,7 +43,7 @@ namespace Students.WorkWithCrud
             {
                 tempStudentResult = item;
                 tempStudentResult.Student = students.Where(obj => obj.Id == item.StudentId).Select(item => item).FirstOrDefault();
-                tempStudentResult.SessionEducationalSubject = educationalSubjects.Where(obj => obj.Id == item.EducationalSubjectId).Select(item => item).FirstOrDefault();
+                tempStudentResult.SessionEducationalSubject = educationalSubjects.Where(obj => obj.Id == item.SessionEducationalSubjectId).Select(item => item).FirstOrDefault();
                 bindStudentResults.Add(tempStudentResult);
             }
 

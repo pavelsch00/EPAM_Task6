@@ -1,9 +1,10 @@
-﻿using ORM.Creators;
-using System;
+﻿using System;
+using ORM.Creators;
+using Students.Interfaces;
 
 namespace Students.Objects
 {
-    public class SessionEducationalSubject : BaseModel
+    public class SessionEducationalSubject : BaseModel, ISessionEducationalSubject
     {
         public SessionEducationalSubject(DateTime date, string type)
         {
@@ -26,5 +27,12 @@ namespace Students.Objects
         public Session Session { get; set; }
 
         public override string ToString() => $"\n{Session}{EducationalSubject}\t Date: {Date.ToShortDateString()}";
+
+        public override bool Equals(object obj) => obj is SessionEducationalSubject subject &&
+                   EducationalSubjectId == subject.EducationalSubjectId &&
+                   Date == subject.Date &&
+                   SessionId == subject.SessionId;
+
+        public override int GetHashCode() => HashCode.Combine(EducationalSubjectId, Date, SessionId);
     }
 }

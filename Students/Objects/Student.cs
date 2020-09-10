@@ -1,9 +1,10 @@
-﻿using ORM.Creators;
-using System;
+﻿using System;
+using ORM.Creators;
+using Students.Interfaces;
 
 namespace Students.Objects
 {
-    public class Student : BaseModel
+    public class Student : BaseModel, IStudent
     {
         public Student(string fullName, string gender, string dateofBirth, Group group)
         {
@@ -37,17 +38,12 @@ namespace Students.Objects
 
         public override string ToString() => $"\nFullName: {FullName}\t Gender: {Gender} \tDateOfBirth: {DateOfBirth.ToShortDateString()} {Group}";
 
-        public override bool Equals(object obj)
-        {
-            return obj is Student student &&
+        public override bool Equals(object obj) => obj is Student student &&
                    FullName == student.FullName &&
                    Gender == student.Gender &&
-                   DateOfBirth == student.DateOfBirth;
-        }
+                   DateOfBirth == student.DateOfBirth &&
+                   GroupId == student.GroupId;
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(FullName, Gender, DateOfBirth);
-        }
+        public override int GetHashCode() => HashCode.Combine(FullName, Gender, DateOfBirth, GroupId);
     }
 }

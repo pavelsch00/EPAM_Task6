@@ -1,9 +1,13 @@
-﻿namespace Students.Interfaces
+﻿using Students.Objects;
+
+namespace Students.Interfaces
 {
     public interface ISession
     {
-        public int Number { get; set; }
-
         public int GroupId { get; set; }
+
+        public Group Group { get; set; }
+
+        public int SessionNumber { get; set; }
     }
 }

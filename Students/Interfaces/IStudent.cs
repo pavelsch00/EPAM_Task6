@@ -1,5 +1,5 @@
-﻿using Students.Objects;
-using System;
+﻿using System;
+using Students.Objects;
 
 namespace Students.Interfaces
 {
@@ -12,5 +12,7 @@ namespace Students.Interfaces
         public DateTime DateOfBirth { get; set; }
 
         public Group Group { get; set; }
+
+        public int GroupId { get; set; }
     }
 }

@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
 using ORM.Creators;
 
 namespace ORM
 {
-    public class WorkWithDb<T> where T : BaseModel, new()
+    public class BasicMethodDb<T> where T : BaseModel, new()
     {
-        private static WorkWithDb<T> instance;
+        private static BasicMethodDb<T> instance;
 
         private readonly FabricBaseModel _fabricBaseModel;
 
@@ -15,21 +16,21 @@ namespace ORM
 
         private readonly List<PropertyInfo> _properties;
 
-        private WorkWithDb(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
+        private readonly SqlConnection _connection;
+
+        private BasicMethodDb(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             _properties = new List<PropertyInfo>(typeof(T).GetProperties());
-            Connection = new SqlConnection(connectionString);
+            _connection = new SqlConnection(connectionString);
             _fabricBaseModel = fabricBaseModel;
             _tableName = tableName;
         }
 
-        public SqlConnection Connection { get; set; }
-
-        public static WorkWithDb<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
+        public static BasicMethodDb<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             if (instance == null)
             {
-                instance = new WorkWithDb<T>(connectionString, tableName, fabricBaseModel);
+                instance = new BasicMethodDb<T>(connectionString, tableName, fabricBaseModel);
             }
 
             return instance;
@@ -39,30 +40,38 @@ namespace ORM
         {
             var sqlExpressionString = $"SELECT * FROM {_tableName}";
 
-            var sqlCommand = new SqlCommand(sqlExpressionString, Connection);
+            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
             sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
-
-            SqlDataReader reader = sqlCommand.ExecuteReader();
-            var collection = new List<T>();
-            var typeOfT = typeof(T);
-
-            var fieldCount = reader.FieldCount;
-
-            if (reader.HasRows)
+            try
             {
-                while (reader.Read())
-                {
-                    var obj = _fabricBaseModel.Create();
-                    for (int i = 0; i < fieldCount; i++)
-                    {
-                        var propInfo = typeOfT.GetProperty(reader.GetName(i));
-                        propInfo?.SetValue(obj, reader.GetValue(i));
-                    }
-                    collection.Add((T)obj);
-                }
-            }
+                _connection.Open();
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                var collection = new List<T>();
+                var typeOfT = typeof(T);
 
-            return collection;
+                var fieldCount = reader.FieldCount;
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var obj = _fabricBaseModel.Create();
+                        for (int i = 0; i < fieldCount; i++)
+                        {
+                            var propInfo = typeOfT.GetProperty(reader.GetName(i));
+                            propInfo?.SetValue(obj, reader.GetValue(i));
+                        }
+                        collection.Add((T)obj);
+                    }
+                }
+
+                _connection.Close();
+                return collection;
+            }
+            catch (Exception)
+            {
+                throw new Exception("Sql query error.");
+            }
         }
 
         public void Create(T obj)
@@ -99,7 +108,7 @@ namespace ORM
             sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
             sqlExpressionString += ");";
 
-            var sqlCommand = new SqlCommand(sqlExpressionString, Connection);
+            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
             sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
             int i = 1;
             foreach (var property in _properties)
@@ -114,7 +123,16 @@ namespace ORM
                 i++;
             }
 
-            sqlCommand.ExecuteNonQuery();
+            try
+            {
+                _connection.Open();
+                sqlCommand.ExecuteNonQuery();
+                _connection.Close();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Sql query error.");
+            }
         }
 
         public void Update(int id, T obj)
@@ -129,7 +147,7 @@ namespace ORM
             sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
 
             sqlExpressionString += $" WHERE ID = @ID;";
-            var sqlCommand = new SqlCommand(sqlExpressionString, Connection);
+            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
 
             foreach (var item in _properties)
             {
@@ -138,17 +156,35 @@ namespace ORM
 
             sqlCommand.Parameters.AddWithValue($"_tableName", _tableName);
             sqlCommand.Parameters.AddWithValue("@ID", id);
-            sqlCommand.ExecuteNonQuery();
+            try
+            {
+                _connection.Open();
+                sqlCommand.ExecuteNonQuery();
+                _connection.Close();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Sql query error.");
+            }
         }
 
         public void Delete(int id)
         {
             string sqlExpressionString = $"DELETE FROM {_tableName} WHERE ID = @ID ;";
 
-            var sqlCommand = new SqlCommand(sqlExpressionString, Connection);
+            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
             sqlCommand.Parameters.AddWithValue($"{_tableName}", _tableName);
             sqlCommand.Parameters.AddWithValue("@ID", id);
-            sqlCommand.ExecuteNonQuery();
+            try
+            {
+                _connection.Open();
+                sqlCommand.ExecuteNonQuery();
+                _connection.Close();
+            }
+            catch (Exception)
+            {
+                throw new Exception("Sql query error.");
+            }
         }
     }
 }

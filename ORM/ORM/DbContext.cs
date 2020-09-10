@@ -1,6 +1,8 @@
-﻿namespace ORM
+﻿using ORM.Interfaces;
+
+namespace ORM
 {
-    public abstract class DbContext
+    public abstract class DbContext : IDbContext
     {
         public DbContext(string connectionString)
         {

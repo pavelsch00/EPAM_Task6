@@ -1,9 +1,10 @@
 ﻿using ORM.Creators;
+using ORM.Interfaces;
 using Students.Objects;
 
 namespace Students.Creators.Objects
 {
-    public class StudentCreator : FabricBaseModel
+    public class StudentCreator : FabricBaseModel, IFabricBaseModel
     {
         public override BaseModel Create()
         {

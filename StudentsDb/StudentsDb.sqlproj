@@ -67,6 +67,7 @@
     <Build Include="dbo\Tables\Sessions.sql" />
     <Build Include="dbo\Tables\Students.sql" />
     <Build Include="dbo\Tables\StudentResults.sql" />
+    <Build Include="dbo\Tables\SessionEducationalSubjects.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="dbo\Script.PostDeployment.sql" />
