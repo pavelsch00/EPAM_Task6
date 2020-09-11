@@ -2,15 +2,24 @@
 using System.Linq;
 using Students.Objects;
 
-namespace Students.WorkWithCrud
+namespace Students.WorkWithORM
 {
+    /// <summary>
+    /// Class set  relation for objects.
+    /// </summary>
     public class SetRelation
     {
-        public static List<Session> BindSessionWithGroup(List<Session> sessions, List<Group> groups)
+        /// <summary>
+        /// Method set relation for Session.
+        /// </summary>
+        /// <param name="sessions">List session objects.</param>
+        /// <param name="groups">List group objects.</param>
+        /// <returns>List session objects.</returns>
+        public static List<Session> SetSessionRelation(List<Session> sessions, List<Group> groups)
         {
             var bindSessions = new List<Session>();
             Session tempSession = null;
-            foreach (var item in sessions)
+            foreach (Session item in sessions)
             {
                 tempSession = item;
                 tempSession.Group = groups.Where(obj => obj.Id == item.GroupId).Select(item => item).FirstOrDefault();
@@ -20,11 +29,17 @@ namespace Students.WorkWithCrud
             return bindSessions;
         }
 
-        public static List<Student> BindStudentWithGroup(List<Student> students, List<Group> groups)
+        /// <summary>
+        /// Method set relation for Student.
+        /// </summary>
+        /// <param name="students">List student objects.</param>
+        /// <param name="groups">List group objects.</param>
+        /// <returns>List student objects.</returns>
+        public static List<Student> SetStudentRelation(List<Student> students, List<Group> groups)
         {
             var bindStudents = new List<Student>();
             Student tempStudent = null;
-            foreach (var item in students)
+            foreach (Student item in students)
             {
                 tempStudent = item;
                 tempStudent.Group = groups.Where(obj => obj.Id == item.GroupId).Select(item => item).FirstOrDefault();
@@ -34,12 +49,18 @@ namespace Students.WorkWithCrud
             return bindStudents;
         }
 
-
-        public static List<StudentResult> BindStudentResultWithStudent(List<StudentResult> studentResults, List<Student> students, List<SessionEducationalSubject> educationalSubjects)
+        /// <summary>
+        /// Method set relation for StudentResult.
+        /// </summary>
+        /// <param name="studentResults">List studentResult objects.</param>
+        /// <param name="students">List student objects.</param>
+        /// <param name="educationalSubjects">List educationalSubject objects.</param>
+        /// <returns>List studentResult objects.</returns>
+        public static List<StudentResult> SetStudentResultRelation(List<StudentResult> studentResults, List<Student> students, List<SessionEducationalSubject> educationalSubjects)
         {
             var bindStudentResults = new List<StudentResult>();
             StudentResult tempStudentResult = null;
-            foreach (var item in studentResults)
+            foreach (StudentResult item in studentResults)
             {
                 tempStudentResult = item;
                 tempStudentResult.Student = students.Where(obj => obj.Id == item.StudentId).Select(item => item).FirstOrDefault();
@@ -50,11 +71,18 @@ namespace Students.WorkWithCrud
             return bindStudentResults;
         }
 
-        public static List<SessionEducationalSubject> BindSessionEducationalSubjectWithSession(List<SessionEducationalSubject> studentResults, List<Session> session, List<EducationalSubject> educationalSubject)
+        /// <summary>
+        /// Method set relation for SessionEducationalSubject.
+        /// </summary>
+        /// <param name="studentResults">List studentResult objects.</param>
+        /// <param name="session">List student objects.</param>
+        /// <param name="educationalSubject">List educationalSubject objects.</param>
+        /// <returns>List sessionEducationalSubject objects.</returns>
+        public static List<SessionEducationalSubject> SetSessionEducationalSubjectRelation(List<SessionEducationalSubject> studentResults, List<Session> session, List<EducationalSubject> educationalSubject)
         {
             var bindStudentResults = new List<SessionEducationalSubject>();
             SessionEducationalSubject tempStudentResult = null;
-            foreach (var item in studentResults)
+            foreach (SessionEducationalSubject item in studentResults)
             {
                 tempStudentResult = item;
                 tempStudentResult.Session = session.Where(obj => obj.Id == item.SessionId).Select(item => item).FirstOrDefault();

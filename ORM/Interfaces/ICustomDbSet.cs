@@ -3,7 +3,7 @@
 namespace ORM.Interfaces
 {
     /// <summary>
-    /// Interface describes the CustomDbSet.
+    /// Interface describes the ICustomDbSet.
     /// </summary>
     public interface ICustomDbSet<T>
     {

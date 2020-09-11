@@ -77,7 +77,7 @@ namespace ORM
         /// <param name="obj">Object to add to database tables.</param>
         public void Add(List<T> collection)
         {
-            foreach (var item in Collection)
+            foreach (T item in Collection)
             {
                 collection = collection.Where(obj => !obj.Equals(item)).Select(item => item).ToList();
             }

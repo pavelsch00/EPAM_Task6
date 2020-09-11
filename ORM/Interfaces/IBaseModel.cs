@@ -1,7 +1,7 @@
 ﻿namespace ORM.Interfaces
 {
     /// <summary>
-    /// Interface describes the Base Model.
+    /// Interface describes the !BaseModel.
     /// </summary>
     public interface IBaseModel
     {

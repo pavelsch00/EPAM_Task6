@@ -2,8 +2,7 @@
 
 namespace ORM.Interfaces
 {
-    /// <summary>
-    /// Interface describes the fabric base model.
+    /// <summary>IFabricBaseModel.
     /// </summary>
     public interface IFabricBaseModel
     {

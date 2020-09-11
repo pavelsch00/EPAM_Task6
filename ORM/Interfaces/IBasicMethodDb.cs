@@ -5,7 +5,7 @@ using System.Text;
 namespace ORM.Interfaces
 {
     /// <summary>
-    /// Interface describes the basic methods database.
+    /// Interface describes the IBasicMethodDb.
     /// </summary>
     public interface IBasicMethodDb<T>
     {

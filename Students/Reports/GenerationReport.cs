@@ -2,27 +2,41 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Office.Interop.Excel;
+using Students.Enums;
 using Students.Objects;
 using Students.WorkWithORM;
 
 namespace Students.Reports
 {
     /// <summary>
-    /// Class describes the BinaryTree.
+    /// Class generation reports.
     /// </summary>
     public class GenerationReport
     {
+        /// <summary>
+        /// The constructor initializes the GenerationReport.
+        /// </summary>
+        /// <param name="name">Group name.</param>
         public GenerationReport(string connectionString)
         {
             StudentDBContext = new StudentDBContext(connectionString);
         }
 
+        /// <summary>
+        /// The property stores information about StudentDBContext.
+        /// </summary>
         public StudentDBContext StudentDBContext { get; set; }
 
-        public void GenerateSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
+        /// <summary>
+        /// Method saving in xlsx format file of session results for session group in the form of a table.
+        /// </summary>
+        /// <param name="pathToFile">Path to file.</param>
+        /// <param name="sortableSheet">Sorted table number.</param>
+        /// <param name="sortOrder">Sort order.</param>
+        public void GenerationSessionResultReportByGroup(string pathToFile, int sortableSheet, SortOrder sortOrder)
         {
-            Application excelApp = new Application();
-            Workbook workBook = excelApp.Workbooks.Add();
+            Application application = new Application();
+            Workbook workBook = application.Workbooks.Add();
             Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
 
             workSheet.Cells[1, "A"] = "Session";
@@ -34,7 +48,7 @@ namespace Students.Reports
 
             int i = 2;
 
-            foreach (var item in StudentDBContext.StudentResult.Collection)
+            foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
                 workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.SessionNumber;
                 workSheet.Cells[i, "B"] = item.SessionEducationalSubject.Session.Group.Name;
@@ -45,12 +59,12 @@ namespace Students.Reports
                 i++;
             }
 
-            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
+            SortSheet(workSheet, i, sortableSheet, (XlSortOrder)sortOrder);
 
             try
             {
-                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report1.xlsx");
-                excelApp.Quit();
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + pathToFile);
+                application.Quit();
             }
             catch (ArgumentException)
             {
@@ -58,10 +72,16 @@ namespace Students.Reports
             }
         }
 
-        public void GenerateAverageSessionReport(int sortableSheet, XlSortOrder xlSortOrder)
+        /// <summary>
+        /// Method for each session, display the xlsx pivot table with average / minimum / maximum score for each group.
+        /// </summary>
+        /// <param name="pathToFile">Path to file.</param>
+        /// <param name="sortableSheet">Sorted table number.</param>
+        /// <param name="sortOrder">Sort order.</param>
+        public void GenerationResultSummaryTableByGroup(string pathToFile, int sortableSheet, SortOrder sortOrder)
         {
-            Application excelApp = new Application();
-            Workbook workBook = excelApp.Workbooks.Add();
+            Application application = new Application();
+            Workbook workBook = application.Workbooks.Add();
             Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
 
             workSheet.Cells[1, "A"] = "Session";
@@ -74,28 +94,28 @@ namespace Students.Reports
 
             List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.SessionEducationalSubject.SessionId).Distinct().ToList();
 
-            foreach (var item in StudentDBContext.StudentResult.Collection)
+            foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
                 if (temp.Where(obj => obj == item?.SessionEducationalSubject?.SessionId).Select(obj => obj).Count() == 1)
                 {
                     workSheet.Cells[i, "A"] = item?.SessionEducationalSubject?.Session?.SessionNumber;
                     workSheet.Cells[i, "B"] = item?.SessionEducationalSubject?.Session?.Group.Name;
 
-                    workSheet.Cells[i, "C"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                    workSheet.Cells[i, "C"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
                         .Where(item => item.SessionEducationalSubject?
                         .EducationalSubject.SubjectType == "Exam")
                         .Select(item => item).ToList(),
                         item.SessionEducationalSubject.SessionId,
                         item.SessionEducationalSubject.Session.GroupId).Average();
 
-                    workSheet.Cells[i, "D"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                    workSheet.Cells[i, "D"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
                         .Where(item => item.SessionEducationalSubject?
                         .EducationalSubject.SubjectType == "Exam")
                         .Select(item => item).ToList(),
                         item.SessionEducationalSubject.SessionId,
                         item.SessionEducationalSubject.Session.GroupId).Min();
 
-                    workSheet.Cells[i, "E"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
+                    workSheet.Cells[i, "E"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
                         .Where(item => item.SessionEducationalSubject?
                             .EducationalSubject.SubjectType == "Exam")
                         .Select(item => item).ToList(),
@@ -106,12 +126,12 @@ namespace Students.Reports
                 }
             }
 
-            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
+            SortSheet(workSheet, i, sortableSheet, (XlSortOrder)sortOrder);
 
             try
             {
-                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report2.xlsx");
-                excelApp.Quit();
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + pathToFile);
+                application.Quit();
             }
             catch (ArgumentException)
             {
@@ -119,10 +139,16 @@ namespace Students.Reports
             }
         }
 
-        public void GetBadStudent(int sortableSheet, XlSortOrder xlSortOrder)
+        /// <summary>
+        /// Method generation bad student by group.
+        /// </summary>
+        /// <param name="pathToFile">Path to file.</param>
+        /// <param name="sortableSheet">Sorted table number.</param>
+        /// <param name="sortOrder">Sort order.</param>
+        public void GenerationBadStudentByGroup(string pathToFile, int sortableSheet, SortOrder sortOrder)
         {
-            Application excelApp = new Application();
-            Workbook workBook = excelApp.Workbooks.Add();
+            Application application = new Application();
+            Workbook workBook = application.Workbooks.Add();
             Worksheet workSheet = (Worksheet)workBook.ActiveSheet;
 
             workSheet.Cells[1, "A"] = "Group";
@@ -130,14 +156,15 @@ namespace Students.Reports
 
             int i = 2;
             int tempMark = 4;
-
+            int idCount = 0;
+            string creditResultIsNotPassed = "Not Passed";
             List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.StudentId).Distinct().ToList();
 
-            foreach (var item in StudentDBContext.StudentResult.Collection)
+            foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
                 int.TryParse(item.Mark, out tempMark);
-                if (temp.Where(obj => obj == item.StudentId).Count() == 1 &&
-                    ((tempMark < 4 && tempMark != 0) || item.Mark == "Not Passed"))
+                idCount = temp.Where(obj => obj == item.StudentId).Count();
+                if (idCount == 1 && ((tempMark < 4 && tempMark != 0) || item.Mark == creditResultIsNotPassed))
                 {
                     workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.Group.Name;
                     workSheet.Cells[i, "B"] = item.Student.FullName;
@@ -147,12 +174,12 @@ namespace Students.Reports
             
             }
 
-            SortSheet(workSheet, i, sortableSheet, xlSortOrder);
+            SortSheet(workSheet, i, sortableSheet, (XlSortOrder)sortOrder);
 
             try
             {
-                workBook.Close(true, $"{Environment.CurrentDirectory}" + @"..\..\..\..\..\Students\Resources\Report3.xlsx");
-                excelApp.Quit();
+                workBook.Close(true, $"{Environment.CurrentDirectory}" + pathToFile);
+                application.Quit();
             }
             catch (ArgumentException)
             {
@@ -160,6 +187,13 @@ namespace Students.Reports
             }
         }
 
+        /// <summary>
+        /// Method sort sheet.
+        /// </summary>
+        /// <param name="workSheet">Work Sheet.</param>
+        /// <param name="maxLine">Max Line.</param>
+        /// <param name="sortableSheet">Sortable Sheet.</param>
+        /// <param name="xlSortOrder">Sort Order.</param>
         private static void SortSheet(Worksheet workSheet, int maxLine, int sortableSheet, XlSortOrder xlSortOrder)
         {
             var rngSort = workSheet.get_Range("A1", $"F{maxLine}");
@@ -170,7 +204,14 @@ namespace Students.Reports
             XlSortOrientation.xlSortColumns);
         }
 
-        private static List<double> GetResultStudentForGroup(List<StudentResult> listStudentResults, int sessionId, int groupId)
+        /// <summary>
+        /// Method get student mark for group.
+        /// </summary>
+        /// <param name="listStudentResults">List student results.</param>
+        /// <param name="sessionId">Session id.</param>
+        /// <param name="groupId">Group id.</param>
+        /// <returns>List sessionEducationalSubject objects.</returns>
+        private static List<double> GetStudentMarkForGroup(List<StudentResult> listStudentResults, int sessionId, int groupId)
         {
             return listStudentResults.Where(item => item.SessionEducationalSubject.SessionId == sessionId 
             && item.SessionEducationalSubject.Session.GroupId == groupId)

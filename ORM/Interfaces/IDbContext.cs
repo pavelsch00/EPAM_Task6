@@ -1,7 +1,7 @@
 ﻿namespace ORM.Interfaces
 {
     /// <summary>
-    /// Interface describes the DbContext.
+    /// Interface describes the !DbContext.
     /// </summary>
     public interface IDbContext
     {

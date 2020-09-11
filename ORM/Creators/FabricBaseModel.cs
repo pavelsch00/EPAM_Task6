@@ -8,9 +8,9 @@ namespace ORM.Creators
     public abstract class FabricBaseModel : IFabricBaseModel
     {
         /// <summary>
-        /// Method read collection objects table from database.
+        /// Method create BaseModel object .
         /// </summary>
-        /// <returns>Object BaseModel.</returns>
+        /// <returns>Abstract BaseModel object.</returns>
         public abstract BaseModel Create();
     }
 }
