@@ -7,9 +7,9 @@ using Students.WorkWithORM;
 
 namespace Students.Reports
 {
-    public class SessionResultsGroups
+    public class GenerationReport
     {
-        public SessionResultsGroups(string connectionString)
+        public GenerationReport(string connectionString)
         {
             StudentDBContext = new StudentDBContext(connectionString);
         }
