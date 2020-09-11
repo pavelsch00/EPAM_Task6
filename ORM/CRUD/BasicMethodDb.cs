@@ -3,21 +3,46 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
 using ORM.Creators;
+using ORM.Interfaces;
 
 namespace ORM
 {
-    public class BasicMethodDb<T> where T : BaseModel, new()
+    /// <summary>
+    /// Class describes the basic methods database.
+    /// </summary>
+    public class BasicMethodDb<T> : IBasicMethodDb<T> where T : BaseModel, new()
     {
+        /// <summary>
+        /// The field stores information about the instance BasicMethodDb<T>.
+        /// </summary>
         private static BasicMethodDb<T> instance;
 
+        /// <summary>
+        /// The field stores information about fabric base model creator.
+        /// </summary>
         private readonly FabricBaseModel _fabricBaseModel;
 
+        /// <summary>
+        /// The field stores information about table name in database.
+        /// </summary>
         private readonly string _tableName;
 
+        /// <summary>
+        /// The field stores information about list property object T.
+        /// </summary>
         private readonly List<PropertyInfo> _properties;
 
+        /// <summary>
+        /// The field stores information about sql connerction.
+        /// </summary>
         private readonly SqlConnection _connection;
 
+        /// <summary>
+        /// The constructor initializes the class object.
+        /// </summary>
+        /// <param name="connectionString">Database connection string.</param>
+        /// <param name="tableName">Table name in database.</param>
+        /// <param name="fabricBaseModel">Fabric base model creator.</param>
         private BasicMethodDb(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             _properties = new List<PropertyInfo>(typeof(T).GetProperties());
@@ -26,6 +51,13 @@ namespace ORM
             _tableName = tableName;
         }
 
+        /// <summary>
+        /// Method get instance BasicMethodDb object.
+        /// </summary>
+        /// <param name="connectionString">Database connection string.</param>
+        /// <param name="tableName">Table name in database.</param>
+        /// <param name="fabricBaseModel">Fabric base model creator.</param>
+        /// <returns>Instance BasicMethodDb<T>.</returns>
         public static BasicMethodDb<T> GetInstance(string connectionString, string tableName, FabricBaseModel fabricBaseModel)
         {
             if (instance == null)
@@ -36,6 +68,10 @@ namespace ORM
             return instance;
         }
 
+        /// <summary>
+        /// Method read collection objects table from database.
+        /// </summary>
+        /// <returns>Collection<T> objects.</returns>
         public List<T> Read()
         {
             var sqlExpressionString = $"SELECT * FROM {_tableName}";
@@ -74,6 +110,10 @@ namespace ORM
             }
         }
 
+        /// <summary>
+        /// Method add object to database.
+        /// </summary>
+        /// <param name="obj">Object to add to database tables.</param>
         public void Create(T obj)
         {
             var sqlExpressionString = $"INSERT INTO {_tableName} (";
@@ -135,13 +175,18 @@ namespace ORM
             }
         }
 
+        /// <summary>
+        /// Method update object to database.
+        /// </summary>
+        /// <param name="id">Id object.</param>
+        /// <param name="obj">Object to update to database.</param>
         public void Update(int id, T obj)
         {
             string sqlExpressionString = $"UPDATE {_tableName} SET ";
 
             foreach (var item in _properties)
             {
-                sqlExpressionString += $"[{item.Name}] = @{item.Name},";
+                sqlExpressionString += $"{item.Name} = @{item.Name},";
             }
 
             sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
@@ -168,6 +213,10 @@ namespace ORM
             }
         }
 
+        /// <summary>
+        /// Method delete object from database.
+        /// </summary>
+        /// <param name="id">Id object.</param>
         public void Delete(int id)
         {
             string sqlExpressionString = $"DELETE FROM {_tableName} WHERE ID = @ID ;";

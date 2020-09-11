@@ -7,6 +7,9 @@ using Students.WorkWithORM;
 
 namespace Students.Reports
 {
+    /// <summary>
+    /// Class describes the BinaryTree.
+    /// </summary>
     public class GenerationReport
     {
         public GenerationReport(string connectionString)
@@ -94,10 +97,10 @@ namespace Students.Reports
 
                     workSheet.Cells[i, "E"] = GetResultStudentForGroup(StudentDBContext.StudentResult.Collection
                         .Where(item => item.SessionEducationalSubject?
-                        .EducationalSubject.SubjectType == "Exam")
+                            .EducationalSubject.SubjectType == "Exam")
                         .Select(item => item).ToList(),
-                        item.SessionEducationalSubject.SessionId,
-                        item.SessionEducationalSubject.Session.GroupId).Max();
+                            item.SessionEducationalSubject.SessionId,
+                            item.SessionEducationalSubject.Session.GroupId).Max();
                     i++;
                     temp.Add(item.SessionEducationalSubject.SessionId);
                 }
@@ -133,7 +136,7 @@ namespace Students.Reports
             foreach (var item in StudentDBContext.StudentResult.Collection)
             {
                 int.TryParse(item.Mark, out tempMark);
-                if (temp.Where(obj => obj == item.StudentId).Select(obj => obj).Count() == 1 &&
+                if (temp.Where(obj => obj == item.StudentId).Count() == 1 &&
                     ((tempMark < 4 && tempMark != 0) || item.Mark == "Not Passed"))
                 {
                     workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.Group.Name;
