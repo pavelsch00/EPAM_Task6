@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Reflection;
 using ORM.Creators;
 using ORM.Interfaces;
@@ -116,50 +117,57 @@ namespace ORM
         /// <param name="obj">Object to add to database tables.</param>
         public void Create(T obj)
         {
-            var sqlExpressionString = $"INSERT INTO {_tableName} (";
-            var parameterName = new List<string>
-            {
-                _tableName
-            };
+            var sqlExpressionString = $"INSERT INTO [{_tableName}] (";
+            var parameterName = new List<string>();
+
             foreach (var property in _properties) /*typeof(T).GetProperties()*/
             {
-                if (property.Name == "Id")
+                if (property.Name == "Id" || property.PropertyType.BaseType == typeof(BaseModel))
                 {
                     continue;
                 }
 
-                sqlExpressionString += $"@{property.Name},";
-                parameterName.Add($"@{property.Name}");
+                sqlExpressionString += $"[{property.Name}],";
+                parameterName.Add($"{property.Name}");
             }
             sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
 
             sqlExpressionString += ") VALUES (";
 
-            foreach (var item in _properties)
-            {
-                if (item.Name == "Id")
-                {
-                    continue;
-                }
-
-                var propValue = item.GetValue(obj);
-                sqlExpressionString += $"'{ propValue}',";
-            }
-            sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
-            sqlExpressionString += ");";
-
-            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
-            sqlCommand.Parameters.AddWithValue(_tableName, _tableName);
-            int i = 1;
             foreach (var property in _properties)
             {
-                if (property.Name == "Id")
+                if (property.Name == "Id" || property.PropertyType.BaseType == typeof(BaseModel))
                 {
                     continue;
                 }
 
                 var propValue = property.GetValue(obj);
-                sqlCommand.Parameters.AddWithValue(parameterName[i], propValue);
+
+                sqlExpressionString += $"@{property.Name},";
+
+            }
+            sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
+            sqlExpressionString += ");";
+
+            var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
+
+            int i = 0;
+            foreach (var property in _properties)
+            {
+                if (property.Name == "Id" || property.PropertyType.BaseType == typeof(BaseModel))
+                {
+                    continue;
+                }
+
+                if(property.PropertyType == typeof(DateTime))
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{parameterName[i]}", $"{((DateTime)property.GetValue(obj)).ToString("yyyy.MM.dd")}");
+                }
+                else
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{parameterName[i]}", $"{property.GetValue(obj)}");
+                }
+
                 i++;
             }
 
@@ -184,23 +192,40 @@ namespace ORM
         {
             string sqlExpressionString = $"UPDATE {_tableName} SET ";
 
-            foreach (var item in _properties)
+            foreach (var property in _properties)
             {
-                sqlExpressionString += $"{item.Name} = @{item.Name},";
+                if (property.Name == "Id" || property.PropertyType.BaseType == typeof(BaseModel))
+                {
+                    continue;
+                }
+
+                sqlExpressionString += $"{property.Name} = @{property.Name},";
             }
 
             sqlExpressionString = sqlExpressionString.Remove(sqlExpressionString.Length - 1);
 
-            sqlExpressionString += $" WHERE ID = @ID;";
+            sqlExpressionString += $" WHERE Id = @Id;";
             var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
 
-            foreach (var item in _properties)
+            foreach (var property in _properties)
             {
-                sqlCommand.Parameters.AddWithValue($"@{item.Name}", item.GetValue(obj));
+                if (property.Name == "Id" || property.PropertyType.BaseType == typeof(BaseModel))
+                {
+                    continue;
+                }
+
+                if (property.PropertyType == typeof(DateTime))
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{property.Name}", $"{((DateTime)property.GetValue(obj)).ToString("yyyy.MM.dd")}");
+                }
+                else
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{property.Name}", $"{property.GetValue(obj)}");
+                }
             }
 
             sqlCommand.Parameters.AddWithValue($"_tableName", _tableName);
-            sqlCommand.Parameters.AddWithValue("@ID", id);
+            sqlCommand.Parameters.AddWithValue("@Id", id);
             try
             {
                 _connection.Open();
@@ -219,11 +244,11 @@ namespace ORM
         /// <param name="id">Id object.</param>
         public void Delete(int id)
         {
-            string sqlExpressionString = $"DELETE FROM {_tableName} WHERE ID = @ID ;";
+            string sqlExpressionString = $"DELETE FROM {_tableName} WHERE Id = @Id ;";
 
             var sqlCommand = new SqlCommand(sqlExpressionString, _connection);
             sqlCommand.Parameters.AddWithValue($"{_tableName}", _tableName);
-            sqlCommand.Parameters.AddWithValue("@ID", id);
+            sqlCommand.Parameters.AddWithValue("@Id", id);
             try
             {
                 _connection.Open();

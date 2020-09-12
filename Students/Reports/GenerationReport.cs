@@ -33,7 +33,7 @@ namespace Students.Reports
         /// <param name="pathToFile">Path to file.</param>
         /// <param name="sortableSheet">Sorted table number.</param>
         /// <param name="sortOrder">Sort order.</param>
-        public void GenerationSessionResultReportByGroup(string pathToFile, int sortableSheet, SortOrder sortOrder)
+        public void GenerationSessionResultReportByGroup(int sessionNumber, string pathToFile, int sortableSheet, SortOrder sortOrder)
         {
             Application application = new Application();
             Workbook workBook = application.Workbooks.Add();
@@ -50,13 +50,16 @@ namespace Students.Reports
 
             foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
-                workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.SessionNumber;
-                workSheet.Cells[i, "B"] = item.SessionEducationalSubject.Session.Group.Name;
-                workSheet.Cells[i, "C"] = item.Student.FullName;
-                workSheet.Cells[i, "D"] = item.SessionEducationalSubject.EducationalSubject.SubjectName;
-                workSheet.Cells[i, "E"] = item.SessionEducationalSubject.EducationalSubject.SubjectType;
-                workSheet.Cells[i, "F"] = item.Mark;
-                i++;
+                if(item.SessionEducationalSubject.Session.SessionNumber == sessionNumber)
+                {
+                    workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.SessionNumber;
+                    workSheet.Cells[i, "B"] = item.SessionEducationalSubject.Session.Group.Name;
+                    workSheet.Cells[i, "C"] = item.Student.FullName;
+                    workSheet.Cells[i, "D"] = item.SessionEducationalSubject.EducationalSubject.SubjectName;
+                    workSheet.Cells[i, "E"] = item.SessionEducationalSubject.EducationalSubject.SubjectType;
+                    workSheet.Cells[i, "F"] = item.Mark;
+                    i++;
+                }
             }
 
             SortSheet(workSheet, i, sortableSheet, (XlSortOrder)sortOrder);
@@ -98,27 +101,23 @@ namespace Students.Reports
             {
                 if (temp.Where(obj => obj == item?.SessionEducationalSubject?.SessionId).Select(obj => obj).Count() == 1)
                 {
+                    var examList = StudentDBContext.StudentResult.Collection
+                        .Where(item => item.SessionEducationalSubject?
+                        .EducationalSubject.SubjectType == "Exam")
+                        .Select(item => item).ToList();
+
                     workSheet.Cells[i, "A"] = item?.SessionEducationalSubject?.Session?.SessionNumber;
                     workSheet.Cells[i, "B"] = item?.SessionEducationalSubject?.Session?.Group.Name;
 
-                    workSheet.Cells[i, "C"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
-                        .Where(item => item.SessionEducationalSubject?
-                        .EducationalSubject.SubjectType == "Exam")
-                        .Select(item => item).ToList(),
+                    workSheet.Cells[i, "C"] = GetStudentMarkForGroup(examList,
                         item.SessionEducationalSubject.SessionId,
                         item.SessionEducationalSubject.Session.GroupId).Average();
 
-                    workSheet.Cells[i, "D"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
-                        .Where(item => item.SessionEducationalSubject?
-                        .EducationalSubject.SubjectType == "Exam")
-                        .Select(item => item).ToList(),
+                    workSheet.Cells[i, "D"] = GetStudentMarkForGroup(examList,
                         item.SessionEducationalSubject.SessionId,
                         item.SessionEducationalSubject.Session.GroupId).Min();
 
-                    workSheet.Cells[i, "E"] = GetStudentMarkForGroup(StudentDBContext.StudentResult.Collection
-                        .Where(item => item.SessionEducationalSubject?
-                            .EducationalSubject.SubjectType == "Exam")
-                        .Select(item => item).ToList(),
+                    workSheet.Cells[i, "E"] = GetStudentMarkForGroup(examList,
                             item.SessionEducationalSubject.SessionId,
                             item.SessionEducationalSubject.Session.GroupId).Max();
                     i++;

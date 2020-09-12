@@ -35,7 +35,7 @@ namespace Students.Objects
         /// The method returns information about the object in string form.
         /// </summary>
         /// <returns>Information about the object.</returns>
-        public override string ToString() => $"\nGroup Name: {Name}\t";
+        public override string ToString() => $"Group Name: {Name}\t";
 
         /// <summary>
         /// Method equals two objects.

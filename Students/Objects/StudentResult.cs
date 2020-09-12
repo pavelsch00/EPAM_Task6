@@ -59,7 +59,7 @@ namespace Students.Objects
         /// The method returns information about the object in string form.
         /// </summary>
         /// <returns>Information about the object.</returns>
-        public override string ToString() => $"\n{Student} {SessionEducationalSubject}\t Assesment: {Mark}";
+        public override string ToString() => $"StudentId: {StudentId} {SessionEducationalSubject}\t Assesment: {Mark}";
 
         /// <summary>
         /// Method equals two objects.

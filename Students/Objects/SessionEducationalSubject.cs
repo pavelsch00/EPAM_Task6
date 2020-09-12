@@ -58,7 +58,7 @@ namespace Students.Objects
         /// The method returns information about the object in string form.
         /// </summary>
         /// <returns>Information about the object.</returns>
-        public override string ToString() => $"\n{Session}{EducationalSubject}\t Date: {Date.ToShortDateString()}";
+        public override string ToString() => $"EducationalSubjectId: {EducationalSubjectId}\t SessionId: {SessionId}\t Date: {Date.ToShortDateString()}";
 
         /// <summary>
         /// Method equals two objects.
