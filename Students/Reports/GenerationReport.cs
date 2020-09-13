@@ -95,33 +95,31 @@ namespace Students.Reports
 
             int i = 2;
 
-            List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.SessionEducationalSubject.SessionId).Distinct().ToList();
+            List<int> countId = StudentDBContext.StudentResult.Collection.Select(item => item.SessionEducationalSubject.SessionId).Distinct().ToList();
 
             foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
-                if (temp.Where(obj => obj == item?.SessionEducationalSubject?.SessionId).Select(obj => obj).Count() == 1)
+                if (countId.Where(obj => obj == item?.SessionEducationalSubject?.SessionId).Select(obj => obj).Count() == 1)
                 {
                     var examList = StudentDBContext.StudentResult.Collection
                         .Where(item => item.SessionEducationalSubject?
                         .EducationalSubject.SubjectType == "Exam")
                         .Select(item => item).ToList();
 
+                    List<double> markForGroup = GetStudentMarkForGroup(examList,
+                        item.SessionEducationalSubject.SessionId,
+                        item.SessionEducationalSubject.Session.GroupId);
+
                     workSheet.Cells[i, "A"] = item?.SessionEducationalSubject?.Session?.SessionNumber;
                     workSheet.Cells[i, "B"] = item?.SessionEducationalSubject?.Session?.Group.Name;
 
-                    workSheet.Cells[i, "C"] = GetStudentMarkForGroup(examList,
-                        item.SessionEducationalSubject.SessionId,
-                        item.SessionEducationalSubject.Session.GroupId).Average();
+                    workSheet.Cells[i, "C"] = markForGroup.Average();
 
-                    workSheet.Cells[i, "D"] = GetStudentMarkForGroup(examList,
-                        item.SessionEducationalSubject.SessionId,
-                        item.SessionEducationalSubject.Session.GroupId).Min();
+                    workSheet.Cells[i, "D"] = markForGroup.Min();
 
-                    workSheet.Cells[i, "E"] = GetStudentMarkForGroup(examList,
-                            item.SessionEducationalSubject.SessionId,
-                            item.SessionEducationalSubject.Session.GroupId).Max();
+                    workSheet.Cells[i, "E"] = markForGroup.Max();
                     i++;
-                    temp.Add(item.SessionEducationalSubject.SessionId);
+                    countId.Add(item.SessionEducationalSubject.SessionId);
                 }
             }
 
@@ -157,17 +155,17 @@ namespace Students.Reports
             int tempMark = 4;
             int idCount = 0;
             string creditResultIsNotPassed = "Not Passed";
-            List<int> temp = StudentDBContext.StudentResult.Collection.Select(item => item.StudentId).Distinct().ToList();
+            List<int> countStudentId = StudentDBContext.StudentResult.Collection.Select(item => item.StudentId).Distinct().ToList();
 
             foreach (StudentResult item in StudentDBContext.StudentResult.Collection)
             {
                 int.TryParse(item.Mark, out tempMark);
-                idCount = temp.Where(obj => obj == item.StudentId).Count();
+                idCount = countStudentId.Where(obj => obj == item.StudentId).Count();
                 if (idCount == 1 && ((tempMark < 4 && tempMark != 0) || item.Mark == creditResultIsNotPassed))
                 {
                     workSheet.Cells[i, "A"] = item.SessionEducationalSubject.Session.Group.Name;
                     workSheet.Cells[i, "B"] = item.Student.FullName;
-                    temp.Add(item.StudentId);
+                    countStudentId.Add(item.StudentId);
                     i++;
                 }
             

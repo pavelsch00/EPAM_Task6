@@ -1,16 +1,18 @@
 ﻿using NUnit.Framework;
 using Students.Enums;
-using Students.Objects;
 using Students.Reports;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Students_Tests.ReportTests
 {
+    /// <summary>
+    /// Class for testing class Report.
+    /// </summary>
     public class ReportTest
     {
+        /// <summary>
+        /// Database connection string.
+        /// </summary>
         private string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=StudentsDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         /// <summary>
@@ -19,14 +21,15 @@ namespace Students_Tests.ReportTests
         [Test]
         public void GenerateSessionReport_GenerationSessionResultReportByGroup_GenerationSessionResultReportByGroup()
         {
-            string path = @"Report1.xlsx";
+            string path = @"..\..\..\..\..\Students\Resources\Report3.xlsx";
+            string pathFileStream = @"..\..\..\..\Students\Resources\Report3.xlsx";
             int sessionNumber = 1;
             int sortableSheet = 2;
             GenerationReport generationReport = new GenerationReport(_connectionString);
             generationReport.GenerationSessionResultReportByGroup(sessionNumber, path, sortableSheet, SortOrder.Ascending);
 
             long result;
-            using (var reader = new FileStream(path, FileMode.Open))
+            using (var reader = new FileStream(pathFileStream, FileMode.Open))
             {
                 result = reader.Length;
             }
@@ -40,14 +43,14 @@ namespace Students_Tests.ReportTests
         [Test]
         public void GenerateSessionReport_GenerationResultSummaryTableByGroups_GenerationResultSummaryTableByGroup()
         {
-            string path = @"Report2.xlsx";
-            int sessionNumber = 1;
+            string path = @"..\..\..\..\..\Students\Resources\Report3.xlsx";
+            string pathFileStream = @"..\..\..\..\Students\Resources\Report3.xlsx";
             int sortableSheet = 2;
             GenerationReport generationReport = new GenerationReport(_connectionString);
             generationReport.GenerationResultSummaryTableByGroup(path, sortableSheet, SortOrder.Ascending);
 
             long result;
-            using (var reader = new FileStream(path, FileMode.Open))
+            using (var reader = new FileStream(pathFileStream, FileMode.Open))
             {
                 result = reader.Length;
             }
@@ -61,13 +64,14 @@ namespace Students_Tests.ReportTests
         [Test]
         public void GenerateSessionReport_GenerationGenerationBadStudentByGroup_GenerationBadStudentByGroup()
         {
-            string path = @"Report3.xlsx";
+            string path = @"..\..\..\..\..\Students\Resources\Report3.xlsx";
+            string pathFileStream = @"..\..\..\..\Students\Resources\Report3.xlsx";
             int sortableSheet = 2;
             GenerationReport generationReport = new GenerationReport(_connectionString);
             generationReport.GenerationBadStudentByGroup(path, sortableSheet, SortOrder.Ascending);
 
             long result;
-            using (var reader = new FileStream(path, FileMode.Open))
+            using (var reader = new FileStream(pathFileStream, FileMode.Open))
             {
                 result = reader.Length;
             }
