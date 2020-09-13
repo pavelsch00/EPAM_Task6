@@ -16,11 +16,11 @@ namespace Students.Objects
         /// <param name="gender">Gender.</param>
         /// <param name="dateofBirth">Date of Birth.</param>
         /// <param name="groupId">Group id.</param>
-        public Student(string fullName, string gender, string dateofBirth, int groupId)
+        public Student(string fullName, string gender, DateTime dateofBirth, int groupId)
         {
             FullName = fullName;
             Gender = gender;
-            DateOfBirth = DateTime.Parse(dateofBirth);
+            DateOfBirth = dateofBirth;
             GroupId = groupId;
         }
 
