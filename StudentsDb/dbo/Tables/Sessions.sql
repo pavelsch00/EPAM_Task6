@@ -5,4 +5,4 @@
     PRIMARY KEY CLUSTERED ([Id] ASC),
     UNIQUE NONCLUSTERED ([Id] ASC),
     CONSTRAINT [FK_GroupResults_To_Groups] FOREIGN KEY ([GroupId]) REFERENCES [dbo].[Groups] ([Id]) ON DELETE SET NULL
-)
+);
